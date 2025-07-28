@@ -2,6 +2,28 @@ import random
 from time import sleep
 from colorama import Fore, Style
 
+# [[ CONFIGURATION ]] ----------------------------------------------------------------------------------
+# Player Names
+names = ["Death Man","Boxy","Polandball","Satan","Stunt Devil","Lukey","Koda","Mitochondria","Pencil","Ronny the Banana","Tom Brady","Atom","Chad","King Lorenzo","Sticky Joe","Trogdor the Burninator","Boat Crew","Terezi Pyrope","Homestar Runner","Carl Grimes","Mr Wilson","Gamer","Hexbug","Four","ChrisPop","Muscles","Erika Faust","Ellie Lander","Teresa Tayliss","Dr Horrible","Billy Blockhead","Nagito Komaeda","Joe","Boston Rob","Dog","Tommy Walter","Germanyball","Americaball","Big Rig","Transparent Red","Joey","Petra","Isaac Creighton","Hunter Moses","Jack Dawson","Josephine Mercier","Roco","Horatio Caine","Frederick","Watch","V2","Nitro","Vriska Serket","Todd","Jackson","2-D","OG","Mr Ben","Tom","Lauren","Martin","Captain Hammer","Heathcliff","The Miser"]
+# First Quarter Tribe Names
+q1Names = ["Tomamasi","Raging Rapids","Dangerous Dynamites","Eclipsed Survivors"]
+q1Colors = [Fore.YELLOW, Fore.BLUE, Fore.RED, Fore.GREEN]
+# Second Quarter Tribe Names
+q2Names = ["Orange Lionhearts","Fuchsia Rulers","Serene Sealions"]
+q2Colors = [Fore.YELLOW, Fore.MAGENTA, Fore.CYAN]
+# Third Quarter Tribe Names
+q3Names = ["Hazardous Dukes","Midnight Lights"]
+q3Colors = [Fore.YELLOW, Fore.BLUE]
+# Merge Tribe Name
+mergeName = "Elite 16"
+q4Colors = [Fore.GREEN, Fore.RED]
+# Jury Name
+juryName = "Jury"
+# Invincibility Name
+immunityName = "Individual Immunity"
+
+# [[ If you know what you're doing, have fun tweaking below! ]] ----------------------------------------------------------------------------------
+
 numPlayers = 64
 jury = []
 
@@ -17,17 +39,18 @@ def Elimination(Team):
     Team.remove(eliminated)
 
     if numPlayers < 17:
+        print(f"They are inducted as member {17 - numPlayers} of the {juryName}.\n")
         jury.append(eliminated)
 
 def printTeams():
     for x in range(len(teams)):
-        print(f"{Fore.RED}[[{teamNames[x]}]]{Style.RESET_ALL}")
+        print(f"{teamColors[x]}[[{teamNames[x]}]]{Style.RESET_ALL}")
         for z in teams[x]:
             print(z.name)
         print(" ")
         
 def printPlayersInMerge(Team):
-    print(f"{Fore.RED}[[Elite 16]]{Style.RESET_ALL}")
+    print(f"{Fore.RED}[[{mergeName}]]{Style.RESET_ALL}")
     for x in Team:
         print(x.name)
     print(" ")
@@ -37,13 +60,13 @@ def proceed():
     print(proceed)
 
 # names_string = input("Enter names of contestants, separated by a comma. (Example: 'Alpha,Bravo,...')\n")
-names = ["Death Man","Boxy","Polandball","Satan","Stunt Devil","Lukey","Koda","Mitochondria","Pencil","Ronny the Banana","Tom Brady","Atom","Chad","King Lorenzo","Sticky Joe","Trogdor the Burninator","Boat Crew","Terezi Pyrope","Homestar Runner","Carl Grimes","Mr Wilson","Gamer","Hexbug","Four","ChrisPop","Muscles","Erika Faust","Ellie Lander","Teresa Tayliss","Dr Horrible","Billy Blockhead","Nagito Komaeda","Joe","Boston Rob","Dog","Tommy Walter","Germanyball","Americaball","Big Rig","Transparent Red","Joey","Petra","Isaac Creighton","Hunter Moses","Jack Dawson","Josephine Mercier","Roco","Horatio Caine","Frederick","Watch","V2","Nitro","Vriska Serket","Todd","Jackson","2-D","OG","Mr Ben","Tom","Lauren","Martin","Captain Hammer","Heathcliff","The Miser"]
 
 players = [Player(item, 0, 0) for item in names]
 notChosen = players.copy()
 
 teams = [[],[],[],[]]
-teamNames = ["Tomamasi","Raging Rapids","Dangerous Dynamites","Eclipsed Survivors"]
+teamNames = q1Names
+teamColors = q1Colors
 
 print("64 Days in the Pit")
 print(f"{Fore.GREEN}[[DAY ONE SCHOOLYARD PICK]]{Style.RESET_ALL}")
@@ -77,7 +100,8 @@ for x in teams:
 teams.clear()
 
 teams = [[],[],[]]
-teamNames = ["Orange Lionhearts","Fuchsia Rulers","Serene Sealions"]
+teamNames = q2Names
+teamColors = q2Colors
 teamId = 0
 while len(notChosen) > 0:
     player = random.choice(notChosen)
@@ -109,7 +133,8 @@ for x in teams:
 teams.clear()
 
 teams = [[],[]]
-teamNames = ["Hazardous Dukes","Midnight Lights"]
+teamNames = q3Names
+teamColors = q3Colors
 teamId = 0
 while len(notChosen) > 0:
     player = random.choice(notChosen)
@@ -147,6 +172,7 @@ while numPlayers > 8:
 
     teams = [[],[]]
     teamNames = ["Immune","Lost the Challenge"]
+    teamColors = q4Colors
     teamId = 0
     while len(notChosen) > 0:   
         player = random.choice(notChosen)
@@ -175,7 +201,7 @@ while numPlayers > 3:
     printPlayersInMerge(notChosen)
     immune = random.choice(notChosen)
     notChosen.remove(immune)
-    print(f"{immune.name} won Individual Immunity.")
+    print(f"{immune.name} won {immunityName}.")
     sleep(2)
 
     Elimination(notChosen)
@@ -233,7 +259,7 @@ elif notChosen[1].juryVotes < notChosen[0].juryVotes:
 else: #Tie
     runnerUp = random.choice(notChosen) # replace with tiebreaker later
 notChosen.remove(runnerUp)
-print(f"{runnerUp.name} failed to win the Jury Vote, and was eliminated in 2nd place.")
+print(f"{runnerUp.name} failed to win the {juryName} Vote, and was eliminated in 2nd place.")
 
 winner = random.choice(notChosen)
 notChosen.remove(winner)
