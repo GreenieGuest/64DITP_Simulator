@@ -4,7 +4,8 @@ from colorama import Fore, Style
 
 # [[ CONFIGURATION ]] ----------------------------------------------------------------------------------
 # Player Names
-names = ["Death Man","Boxy","Polandball","Satan","Stunt Devil","Lukey","Koda","Mitochondria","Pencil","Ronny the Banana","Tom Brady","Atom","Chad","King Lorenzo","Sticky Joe","Trogdor the Burninator","Boat Crew","Terezi Pyrope","Homestar Runner","Carl Grimes","Mr Wilson","Gamer","Hexbug","Four","ChrisPop","Muscles","Erika Faust","Ellie Lander","Teresa Tayliss","Dr Horrible","Billy Blockhead","Nagito Komaeda","Joe","Boston Rob","Dog","Tommy Walter","Germanyball","Americaball","Big Rig","Transparent Red","Joey","Petra","Isaac Creighton","Hunter Moses","Jack Dawson","Josephine Mercier","Roco","Horatio Caine","Frederick","Watch","V2","Nitro","Vriska Serket","Todd","Jackson","2-D","OG","Mr Ben","Tom","Lauren","Martin","Captain Hammer","Heathcliff","The Miser"]
+season_name = "64 Days in the Pit - The Ewowltimate Showdown"
+names = ["losered","TieTiePerson","scorb","#1 sigma Rizz lord","4DJumpman256","X_Ry","Dark","J_duude","Shorky","MayUnderFlowers","Purplegaze","Sparrowcat","JujuMas","GreenieGuest","iRDM","Xyloba","CloudySkyes","RainbowKnight","Brandy?","ThePinkBunnyEmpire","ALITL","Snoozingnewt","SinisterShovel","Midnight Light","whitecyclosa","terminatedslime","Catworld","xXBombs_AwayXx","ArnoobExtra","recc","Grammar Lee","Nerdy Gal","Koopa472","IceKeyHammer","Cohaki","Water Chestnut","LemonVenom","PoliteCheese1414","DogeBone3","PlasmicTrojan","hydrogencitrus","Srimochi","Gizmote","tr_","Deckardv","Juhmatok","mazuat","goobrey","Himo","Paintspot Infez","IntersectingPlanes","Yume Flamigiri","TrainGoBoom","MineFlex_B","#zackd","Twiggy","sictoabu","Swift Smartypants","cloverpepsi","thanos whale.","Onchú","kuminda.water.supply","Indigo","PengiQuin"]
 # First Quarter Tribe Names
 q1Names = ["Tomamasi","Raging Rapids","Dangerous Dynamites","Eclipsed Survivors"]
 q1Colors = [Fore.YELLOW, Fore.BLUE, Fore.RED, Fore.GREEN]
@@ -17,87 +18,161 @@ q3Colors = [Fore.YELLOW, Fore.BLUE]
 # Merge Tribe Name
 mergeName = "Elite 16"
 q4Colors = [Fore.GREEN, Fore.RED]
+mergeColor = Fore.YELLOW
 # Jury Name
 juryName = "Jury"
 # Invincibility Name
 immunityName = "Individual Immunity"
 
-# [[ If you know what you're doing, have fun tweaking below! ]] ----------------------------------------------------------------------------------
+# If you know what you're doing, have fun tweaking below! ----------------------------------------------------------------------------------
 
-numPlayers = 64
+# [[ IMPORTANT SIMULATION STUFF ]] ----------------------------------------------------------------------------------
+numPlayers = len(names)
 jury = []
+bootOrder = []
+challenges = []
+quarter = 1
 
 class Player:
-    def __init__(self, name, showdownPoints, juryVotes):
+    def __init__(self, name, showdownPoints, juryVotes, color1, color2, color3, physStat, stratStat, socStat, notoriety, faction):
         self.name = name
+        # Game Points
         self.showdownPoints = showdownPoints
         self.juryVotes = juryVotes
 
+        # Team Colors
+        self.color1 = color1
+        self.color2 = color2
+        self.color3 = color3
+
+        # Stats
+        self.physStat = physStat
+        self.stratStat = stratStat
+        self.socStat = socStat
+        self.notoriety = notoriety
+        self.faction = faction
+
+# [[ SIM FUNCTIONS ]] ----------------------------------------------------------------------------------
+
 def Elimination(Team):
-    eliminated = random.choice(Team)
-    print(f"{eliminated.name} was voted out. {numPlayers - 1} remain.\n")
+
+    # Future voting logic goes here.
+
+    eliminated = random.choice(Team) # For now (and as in 2018) the eliminated contestant is random
+
+    print(f"{65 - numPlayers}{suffix(65 - numPlayers)} person voted out of {season_name}...")
+    sleep(3)
+    print(f"{eliminated.name}. {numPlayers - 1} remain.\n")
     Team.remove(eliminated)
 
     if numPlayers < 17:
-        print(f"They are inducted as member {17 - numPlayers} of the {juryName}.\n")
+        print(f"They are inducted as the {17 - numPlayers}{suffix(17 - numPlayers)} member of the {juryName}.\n")
         jury.append(eliminated)
 
-def printTeams():
+def printTeams(showTeams):
     for x in range(len(teams)):
         print(f"{teamColors[x]}[[{teamNames[x]}]]{Style.RESET_ALL}")
         for z in teams[x]:
-            print(z.name)
+            if showTeams == True:
+                match quarter:
+                    case 2:
+                        print(z.name + f" [{z.color1}*{Style.RESET_ALL}]")
+                    case 3:
+                        print(z.name + f" [{z.color1}*{z.color2}*{Style.RESET_ALL}]")
+                    case 4:
+                        print(z.name + f" [{z.color1}*{z.color2}*{z.color3}*{Style.RESET_ALL}]")
+                    case _:
+                        print(z.name)
+            else:
+                print(z.name)
         print(" ")
         
-def printPlayersInMerge(Team):
-    print(f"{Fore.RED}[[{mergeName}]]{Style.RESET_ALL}")
+def printPlayersIn(Team, name, color, showTeams):
+    print(f"{color}[[{name}]]{Style.RESET_ALL}")
     for x in Team:
-        print(x.name)
+        if showTeams == True:
+            match quarter:
+                case 2:
+                    print(x.name + f" [{x.color1}*{Style.RESET_ALL}]")
+                case 3:
+                    print(x.name + f" [{x.color1}*{x.color2}*{Style.RESET_ALL}]")
+                case 4:
+                    print(x.name + f" [{x.color1}*{x.color2}*{x.color3}*{Style.RESET_ALL}]")
+                case _:
+                    print(x.name)
+        else:
+            print(x.name)
     print(" ")
+
+def suffix(n):
+    if 11 <= n % 100 <= 13:
+        return "th"
+    else:
+        return {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
 
 def proceed():
     proceed = input("Press enter to proceed.")
-    print(proceed)
+    print(" ")
 
-# names_string = input("Enter names of contestants, separated by a comma. (Example: 'Alpha,Bravo,...')\n")
+def rollPass(stat):
+    """
+    The basic scheme for randomizing performance based on a stat.
+    """
+    playerRoll = random.randint(1, stat)
+    threshold = random.randint(1, 6)
+    
+    if playerRoll >= threshold:
+        return True
+    else:
+        return False
 
-players = [Player(item, 0, 0) for item in names]
+def clearTeams():
+    for x in teams:
+        notChosen.extend(x)
+    teams.clear()
+
+# [[ SIMULATION ]] ----------------------------------------------------------------------------------
+
+players = [Player(item, 0, 0, None, None, None, random.randint(1, 6), random.randint(1, 6), random.randint(1, 6), 0, "Unaffiliated") for item in names]
 notChosen = players.copy()
 
 teams = [[],[],[],[]]
 teamNames = q1Names
 teamColors = q1Colors
 
-print("64 Days in the Pit")
+print(f"{season_name}")
 print(f"{Fore.GREEN}[[DAY ONE SCHOOLYARD PICK]]{Style.RESET_ALL}")
 teamId = 0
-while len(notChosen) > 1:
+while len(notChosen) > 0:
     player = random.choice(notChosen)
     teams[teamId].append(player)
+    player.color1 = teamColors[teamId]
     notChosen.remove(player)
     teamId += 1
     if teamId > 3:
         teamId = 0
 
-printTeams()
+printTeams(True)
 print(f"{Fore.GREEN}[[FIRST QUARTER - FOUR-TEAM PHASE]]{Style.RESET_ALL}")
 proceed()
 
 while numPlayers > 48:
-    print(f"Day {65 - numPlayers}")
+    print(f"[- Day {65 - numPlayers} -]\n")
     losers = random.randint(0, 3)
     print(f"{teamNames[losers]} lost the challenge!")
+
+    printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
+    sleep(2)
     Elimination(teams[losers])
     numPlayers -= 1
 
-    sleep(1)
-printTeams()
+    proceed()
+printTeams(True)
 print(f"{Fore.GREEN}[[SECOND QUARTER - THREE-TEAM PHASE]]{Style.RESET_ALL}")
+quarter += 1
 proceed()
 # First Quarter End
-for x in teams:
-    notChosen.extend(x)
-teams.clear()
+clearTeams()
 
 teams = [[],[],[]]
 teamNames = q2Names
@@ -106,31 +181,34 @@ teamId = 0
 while len(notChosen) > 0:
     player = random.choice(notChosen)
     teams[teamId].append(player)
+    player.color2 = teamColors[teamId]
     notChosen.remove(player)
     teamId += 1
     if teamId > 2:
         teamId = 0
 
-printTeams()
+printTeams(True)
 print("The teams have been swapped randomly. The Second Quarter begins.")
 proceed()
 
 while numPlayers > 32:
-    print(f"Day {65 - numPlayers}")
+    print(f"[- Day {65 - numPlayers} -]\n")
     losers = random.randint(0, 2)
     print(f"{teamNames[losers]} lost the challenge!")
+
+    printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
+    sleep(2)
     Elimination(teams[losers])
     numPlayers -= 1
 
-    sleep(1)
-printTeams()
+    proceed()
+printTeams(True)
 print(f"{Fore.GREEN}[[THIRD QUARTER - TWO-TEAM PHASE]]{Style.RESET_ALL}")
+quarter += 1
 proceed()
 
 # Second Quarter End
-for x in teams:
-    notChosen.extend(x)
-teams.clear()
+clearTeams()
 
 teams = [[],[]]
 teamNames = q3Names
@@ -139,36 +217,39 @@ teamId = 0
 while len(notChosen) > 0:
     player = random.choice(notChosen)
     teams[teamId].append(player)
+    player.color3 = teamColors[teamId]
     notChosen.remove(player)
     teamId += 1
     if teamId > 1:
         teamId = 0
 
-printTeams()
+printTeams(True)
 print("The halfway point of players has been reached. The teams have been swapped again. The Third Quarter begins.")
 proceed()
 
 while numPlayers > 16:
-    print(f"Day {65 - numPlayers}")
+    print(f"[- Day {65 - numPlayers} -]\n")
     losers = random.randint(0, 1)
     print(f"{teamNames[losers]} lost the challenge!")
+
+    printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
+    sleep(2)
     Elimination(teams[losers])
     numPlayers -= 1
 
-    sleep(1)
-printTeams()
+    proceed()
+printTeams(False)
 proceed()
 # Third Quarter End
+quarter += 1
 print("The teams have officially merged. For the first half of the merge, the first half of competitors who win the challenge win immunity.")
-for x in teams:
-    notChosen.extend(x)
-teams.clear()
-printPlayersInMerge(notChosen)
+clearTeams()
+printPlayersIn(notChosen, mergeName, mergeColor, True)
 print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (HAVE-GOTS vs. HAVE-NOTS)]]{Style.RESET_ALL}")
 proceed()
 
 while numPlayers > 8:
-    print(f"Day {65 - numPlayers}")
+    print(f"[- Day {65 - numPlayers} -]\n")
 
     teams = [[],[]]
     teamNames = ["Immune","Lost the Challenge"]
@@ -181,36 +262,35 @@ while numPlayers > 8:
         teamId += 1
         if teamId > 1:
            teamId = 0
-    printTeams()
+    printTeams(False)
     sleep(2)
 
     Elimination(teams[1])
     numPlayers -= 1
-    for x in teams:
-        notChosen.extend(x)
-    teams.clear()
+    clearTeams()
 
-    sleep(3)
+    proceed()
 print("The Have-Gots vs. Have-Nots phase is over. Individual immunity is now in effect.")
-printPlayersInMerge(notChosen)
+printPlayersIn(notChosen, mergeName, mergeColor, True)
 print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (INDIVIDUAL IMMUNITY)]]{Style.RESET_ALL}")
 proceed()
 
 while numPlayers > 3:
-    print(f"Day {65 - numPlayers}")
-    printPlayersInMerge(notChosen)
+    print(f"[- Day {65 - numPlayers} -]\n")
+    printPlayersIn(notChosen, mergeName, mergeColor, False)
     immune = random.choice(notChosen)
     notChosen.remove(immune)
     print(f"{immune.name} won {immunityName}.")
+    
     sleep(2)
 
     Elimination(notChosen)
     numPlayers -= 1
     notChosen.append(immune)
 
-    sleep(3)
-printPlayersInMerge(notChosen)
-print(f"Day 62")
+    proceed()
+printPlayersIn(notChosen, mergeName, mergeColor, True)
+print(f"[- Day 62 -]\n")
 print("The final challenge, to decide which of the final 3 makes it to the final 2, is a marathon of every previous challenge in order. The player with the least wins after all 61 rounds will fail to qualify.")
 print(f"{Fore.GREEN}[[FINAL THREE CHALLENGE - THE ULTIMATE SHOWDOWN]]{Style.RESET_ALL}")
 proceed()
@@ -236,10 +316,12 @@ else: #Tie
 
 notChosen.remove(fallenAngel)
 print(f"{fallenAngel.name} failed to qualify for the finale after the Ultimate Showdown, and was eliminated in 3rd place.")
+print(f"They are inducted as the {17 - numPlayers}th and final member of the {juryName}.\n")
+numPlayers -= 1
 jury.append(fallenAngel)
 
-printPlayersInMerge(notChosen)
-print(f"Day 64")
+printPlayersIn(notChosen, mergeName, mergeColor, True)
+print(f"[- Day 64 -]\n")
 print("The members of the jury, who all were eliminated after the merge, will now decide the winner.")
 print(f"{Fore.GREEN}[[FINAL TWO - JURY VOTE]]{Style.RESET_ALL}")
 proceed()
@@ -257,12 +339,23 @@ if notChosen[0].juryVotes < notChosen[1].juryVotes:
 elif notChosen[1].juryVotes < notChosen[0].juryVotes:
     runnerUp = notChosen[1]
 else: #Tie
-    runnerUp = random.choice(notChosen) # replace with tiebreaker later
+    print(f"The votes tied. {fallenAngel.name}, the final {juryName} member, will cast an additional final vote.")
+    sleep(1)
+    votePick = random.choice(notChosen)
+    votePick.juryVotes += 1
+    print(f"They vote for {votePick.name}.")
+
+    if notChosen[0].juryVotes < notChosen[1].juryVotes:
+        runnerUp = notChosen[0]
+    else:
+        runnerUp = notChosen[1]
+
 notChosen.remove(runnerUp)
-print(f"{runnerUp.name} failed to win the {juryName} Vote, and was eliminated in 2nd place.")
+print(f"{runnerUp.name} failed to win the {juryName} Vote, and was eliminated in 2nd place as the runner-up.\n")
+numPlayers -= 1
 
 winner = random.choice(notChosen)
 notChosen.remove(winner)
-print(f"{winner.name} won.")
+print(f"{winner.name} is the winner of {season_name}.")
 
 sleep(10)
