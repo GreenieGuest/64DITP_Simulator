@@ -3,6 +3,7 @@ import math
 from time import sleep
 from colorama import Fore, Style
 import json
+from challenges import teamChallenge, challengeMerge
 
 # [[ CONFIGURATION ]] ----------------------------------------------------------------------------------
 # Player Names
@@ -26,9 +27,9 @@ juryName = "Jury"
 # Invincibility Name
 immunityName = "Individual Immunity"
 
-FASTFORWARD = True
+FASTFORWARD = False
 
-PRESET_PROFILES = False
+PRESET_PROFILES = True
 PROFILE_FILE_PATH = 'profiles.json'
 
 # If you know what you're doing, have fun tweaking below! ----------------------------------------------------------------------------------
@@ -64,164 +65,15 @@ def decode(obj):
     
 # [[ SIM FUNCTIONS ]] ----------------------------------------------------------------------------------
 
-def teamChallenge():
-    challengeTypes = ["physical", "mental", "teamwork", "puzzle", "luck"]
-    challenge = random.choice(challengeTypes)
-    challenges.append(challenge)
-
-    teamSize = teams.copy()
-    teamSize.sort(key=len)
-
-    participating = len(teamSize[0]) # Sit out extra members to make things fair
-
-    teamPoints = [0] * len(teams)
-    loserId = None
-    match challenge:
-        case "physical":
-            # Generic Challenge Format
-
-            print("Challenge: Physical")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll = random.randint(1, teams[team][player].physStat)
-
-                    points += playerRoll
-                
-                teamPoints[team] = points
-        case "mental":
-            # Generic Challenge Format
-
-            print("Challenge: Mental")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll = random.randint(1, teams[team][player].stratStat)
-
-                    points += playerRoll
-
-                teamPoints[team] = points
-        case "teamwork":
-            # Generic Challenge Format
-
-            print("Challenge: Teamwork")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll = random.randint(1, teams[team][player].socStat)
-
-                    points += playerRoll
-
-                teamPoints[team] = points
-        case "puzzle":
-            print("Challenge: Puzzle")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll1 = random.randint(1, teams[team][player].socStat)
-                    playerRoll2 = random.randint(1, teams[team][player].stratStat)
-
-                    points += (playerRoll1 * playerRoll2)
-
-                teamPoints[team] = points
-        case _:
-            print("Challenge: Luck")
-            for team in range(0, len(teams)):
-                points = random.randint(1, 20)
-
-                teamPoints[team] = points
-
-    # Sort the points per team, then find the team with lowest points and declare them the loser.
-    # Functionality for multiple losers later
-
-    results = teamPoints.copy()
-    results.sort()
-    
-    print(f"Results:")
-    for x in range(len(teams)):
-        print(f"{teamColors[x]}{teamNames[x]}{Style.RESET_ALL}: {teamPoints[x]}")
-    loserId = teamPoints.index(results[0]) # First element in results is losing team
-    return loserId
-
-def challengeMerge(ultimateShowdown, showdownRound):
-    if ultimateShowdown == True:
-        challenge = challenges[showdownRound]
-    else:
-        challengeTypes = ["physical", "mental", "elimination"]
-        challenge = random.choice(challengeTypes)
-        challenges.append(challenge)
-
-    playerPoints = [0] * len(notChosen)
-    match challenge:
-        case "physical":
-            # Generic Challenge Format
-
-            print("Challenge: Physical")
-            for player in range(len(notChosen)):
-                points = random.randint(1, notChosen[player].physStat)
-                
-                playerPoints[player] = points
-        case "mental":
-            print("Challenge: Mental")
-            for player in range(len(notChosen)):
-                points = random.randint(1, notChosen[player].stratStat)
-                
-                playerPoints[player] = points
-        case "elimination":
-            print("Challenge: Elimination")
-            for player in range(len(notChosen)):
-                points = random.randint(1, notChosen[player].socStat)
-                
-                playerPoints[player] = points
-
-        # Pre-Merge Challenges (for Ultimate Showdown)
-
-        case "teamwork":
-            print("Challenge: Teamwork")
-            for player in range(len(notChosen)):
-                points = random.randint(1, notChosen[player].socStat)
-                
-                playerPoints[player] = points
-        case "puzzle":
-            print("Challenge: Puzzle")
-            for player in range(len(notChosen)):
-                playerRoll1 = random.randint(1, notChosen[player].socStat)
-                playerRoll2 = random.randint(1, notChosen[player].stratStat)
-
-                points = (playerRoll1 * playerRoll2)
-                
-                playerPoints[player] = points
-        case _:
-            print("Challenge: Luck")
-            for player in range(len(notChosen)):
-                points = random.randint(1, 20)
-
-                playerPoints[player] = points
-
-    # Sort the points per player, returning a list of players from MOST POINTS to LEAST.
-
-    results = playerPoints.copy()
-    results.sort(reverse=True)
-    
-    print(f"Results:")
-    for x in range(len(notChosen)):
-        print(f"{notChosen[x].name}: {playerPoints[x]}")
-    for x in range(len(results)):
-
-        index = playerPoints.index(results[x])
-        results[x] = index
-        playerPoints[index] = 0 # Clears the player's index so that repeat values aren't used. This breaks the sim
-        
-    
-    wait(1)
-
-    return results
-
 def Elimination(Team):
 
     # Future voting logic goes here.
 
-    eliminated = random.choice(Team) # For now (and as in 2018) the eliminated contestant is random
+    chances = Team.copy()
+    for x in Team:
+        chances.extend(addWeight(x, x.notoriety))
+
+    eliminated = random.choice(chances) # For now (and as in 2018) the eliminated contestant is random
 
     print(f"{65 - numPlayers}{suffix(65 - numPlayers)} person voted out of {season_name}...")
     wait(3)
@@ -285,6 +137,36 @@ def getShowdownPoints(player):
     """
     return player.showdownPoints
 
+def physScope(player):
+    """
+    Get a stat.
+    """
+    return random.randint(1, player.physStat)
+
+def stratScope(player):
+    """
+    Get a stat.
+    """
+    return random.randint(1, player.stratStat)
+
+def socScope(player):
+    """
+    Get a stat.
+    """
+    return random.randint(1, player.socStat)
+
+def randomScope(player):
+    """
+    Get a stat.
+    """
+    return random.randint(1, 64)
+
+def addWeight(player, stat):
+    weight = []
+    for x in range(stat):
+        weight.append(player)
+
+    return weight
 
 def rollPass(stat):
     """
@@ -333,6 +215,7 @@ teamNames = q1Names
 teamColors = q1Colors
 
 teamCaptains = [None, None, None, None] # Purely cosmetic
+captainPreference = [None, None, None, None]
 
 print(f"{season_name}")
 print(f"{Fore.GREEN}[[DAY ONE SCHOOLYARD PICK]]{Style.RESET_ALL}")
@@ -349,12 +232,36 @@ for x in range(4):
         teamId = 0
 
 print(f"The team captains are randomly selected as {teamCaptains[0].name}, {teamCaptains[1].name}, {teamCaptains[2].name}, and {teamCaptains[3].name}.")
+for x in range(len(captainPreference)):
+    preference = random.randint(1, 6)
+    match preference:
+        case 1: # Smart Team
+            captainPreference[x] = x
+            print(f"{teamCaptains[x].name} wants to choose a team of intelligent players.")
+        case 2: # Social Team
+            captainPreference[x] = x
+            print(f"{teamCaptains[x].name} wants to choose a team of social players.")
+        case 3: # Random Team
+            captainPreference[x] = x
+            print(f"{teamCaptains[x].name} has no team preference.")
+        case _: # Strong Team
+            captainPreference[x] = x
+            print(f"{teamCaptains[x].name} wants to pick a physically strong team.")
+
 wait(1)
 
 while len(notChosen) > 0:
-    player = random.choice(notChosen)
+    match captainPreference[teamId]:
+        case 1: # Smart Team
+            notChosen.sort(reverse=True, key=stratScope)
+        case 2: # Social Team
+            notChosen.sort(reverse=True, key=socScope)
+        case 3: # Random Team
+            notChosen.sort(reverse=True, key=randomScope)
+        case _: # Strong Team
+            notChosen.sort(reverse=True, key=physScope)
 
-    # Future logic for choosing teams here
+    player = notChosen[0]
 
     print(f"{teamCaptains[teamId].name} chooses {player.name}.")
     teams[teamId].append(player)
@@ -371,7 +278,7 @@ proceed()
 
 while numPlayers > 48:
     print(f"[- Day {65 - numPlayers} -]\n")
-    losers = teamChallenge()
+    losers = teamChallenge(challenges, teams, teamNames, teamColors)
 
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
@@ -407,7 +314,7 @@ proceed()
 
 while numPlayers > 32:
     print(f"[- Day {65 - numPlayers} -]\n")
-    losers = teamChallenge()
+    losers = teamChallenge(challenges, teams, teamNames, teamColors)
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
 
@@ -444,7 +351,7 @@ proceed()
 
 while numPlayers > 16:
     print(f"[- Day {65 - numPlayers} -]\n")
-    losers = teamChallenge()
+    losers = teamChallenge(challenges, teams, teamNames, teamColors)
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
 
@@ -472,7 +379,7 @@ while numPlayers > 8:
     teamColors = q4Colors
     teamId = 0
 
-    challengeResults = challengeMerge(False, 0)
+    challengeResults = challengeMerge(False, 0, challenges, notChosen)
     threshold = math.ceil(numPlayers / 2)
     dangerzone = notChosen.copy()
 
@@ -504,7 +411,7 @@ while numPlayers > 3:
     print(f"[- Day {65 - numPlayers} -]\n")
     printPlayersIn(notChosen, mergeName, mergeColor, False)
     
-    challengeResults = challengeMerge(False, 0)
+    challengeResults = challengeMerge(False, 0, challenges, notChosen)
     immune = notChosen[challengeResults[0]] # In Elite 8 phase, only the top challenge performer is given immunity
     immune.notoriety += 1
 
@@ -527,7 +434,7 @@ proceed()
 # Ultimate Showdown
 
 for x in range(61):
-    challengeResults = challengeMerge(True, x)
+    challengeResults = challengeMerge(True, x, challenges, notChosen)
     challengeWinner = notChosen[challengeResults[0]]
     challengeWinner.showdownPoints += 1
 
@@ -581,7 +488,7 @@ elif notChosen[1].juryVotes < notChosen[0].juryVotes:
 else: #Tie
     print(f"The votes tied. {fallenAngel.name}, the final {juryName} member, will cast an additional final vote.")
     wait(1)
-    weight = random.randint(notChosen[0].notoriety + notChosen[1].notoriety) # Chances of one player being voted for is based on how much they've played the game by winning challenges, etc
+    weight = random.randint(0, notChosen[0].notoriety + notChosen[1].notoriety) # Chances of one player being voted for is based on how much they've played the game by winning challenges, etc
     if weight < notChosen[0].notoriety:
         votePick = notChosen[0]
     else:
