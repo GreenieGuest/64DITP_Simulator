@@ -205,8 +205,12 @@ if PRESET_PROFILES == True:
         with open(PROFILE_FILE_PATH, 'r') as f:
             data = json.load(f, object_hook=decode)
 
-            for player in range(len(data)): # If not 64 players, then replace up to that many players
+            for player in range(min(len(players), len(data))): # If not 64 players, then replace up to that many players
                 players[player] = data[player]
+
+            # if more than default entries, add them to the pile so they might be picked out via random sample
+            if len(data) > len(players):
+                players.extend(data[len(players):])
     except FileNotFoundError:
         print(f"Error: file '{PROFILE_FILE_PATH}' not found")
     except json.JSONDecodeError:
@@ -530,3 +534,4 @@ for x in range(len(bootOrder)):
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}")
         
 proceed()
+
