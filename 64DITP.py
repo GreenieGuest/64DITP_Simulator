@@ -1,9 +1,15 @@
 import random
 import math
+import json
+import os
 from time import sleep
 from colorama import Fore, Style
-import json
 from challenges import teamChallenge, challengeMerge
+from pathlib import Path
+
+file = Path(__file__)
+parent = file.parent
+os.chdir(parent)
 
 # [[ CONFIGURATION ]] ----------------------------------------------------------------------------------
 # Player Names
@@ -35,6 +41,7 @@ PROFILE_FILE_PATH = 'profiles.json'
 # If you know what you're doing, have fun tweaking below! ----------------------------------------------------------------------------------
 
 # [[ IMPORTANT SIMULATION STUFF ]] ----------------------------------------------------------------------------------
+castSize = len(names)
 numPlayers = len(names)
 jury = []
 bootOrder = []
@@ -75,7 +82,7 @@ def Elimination(Team):
 
     eliminated = random.choice(chances) # For now (and as in 2018) the eliminated contestant is random
 
-    print(f"{65 - numPlayers}{suffix(65 - numPlayers)} person voted out of {season_name}...")
+    print(f"{castSize + 1 - numPlayers}{suffix(castSize + 1 - numPlayers)} person voted out of {season_name}...")
     wait(3)
     print(f"{eliminated.name}. {numPlayers - 1} remain.\n")
     Team.remove(eliminated)
@@ -236,16 +243,16 @@ for x in range(len(captainPreference)):
     preference = random.randint(1, 6)
     match preference:
         case 1: # Smart Team
-            captainPreference[x] = x
+            captainPreference[x] = preference
             print(f"{teamCaptains[x].name} wants to choose a team of intelligent players.")
         case 2: # Social Team
-            captainPreference[x] = x
+            captainPreference[x] = preference
             print(f"{teamCaptains[x].name} wants to choose a team of social players.")
         case 3: # Random Team
-            captainPreference[x] = x
+            captainPreference[x] = preference
             print(f"{teamCaptains[x].name} has no team preference.")
         case _: # Strong Team
-            captainPreference[x] = x
+            captainPreference[x] = preference
             print(f"{teamCaptains[x].name} wants to pick a physically strong team.")
 
 wait(1)
@@ -270,14 +277,14 @@ while len(notChosen) > 0:
     teamId += 1
     if teamId > 3:
         teamId = 0
-    wait(0.5)
+    wait(.5)
 
 printTeams(True)
 print(f"{Fore.GREEN}[[FIRST QUARTER - FOUR-TEAM PHASE]]{Style.RESET_ALL}")
 proceed()
 
 while numPlayers > 48:
-    print(f"[- Day {65 - numPlayers} -]\n")
+    print(f"[- Day {castSize + 1 - numPlayers} -]\n")
     losers = teamChallenge(challenges, teams, teamNames, teamColors)
 
     print(f"\n{teamNames[losers]} lost the challenge!")
@@ -313,7 +320,7 @@ print("The teams have been swapped randomly. The Second Quarter begins.")
 proceed()
 
 while numPlayers > 32:
-    print(f"[- Day {65 - numPlayers} -]\n")
+    print(f"[- Day {castSize + 1 - numPlayers} -]\n")
     losers = teamChallenge(challenges, teams, teamNames, teamColors)
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
@@ -350,7 +357,7 @@ print("The halfway point of players has been reached. The teams have been swappe
 proceed()
 
 while numPlayers > 16:
-    print(f"[- Day {65 - numPlayers} -]\n")
+    print(f"[- Day {castSize + 1 - numPlayers} -]\n")
     losers = teamChallenge(challenges, teams, teamNames, teamColors)
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
@@ -372,7 +379,7 @@ print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (HAVE-GOTS vs. HAVE-NOTS)]]{Style.R
 proceed()
 
 while numPlayers > 8:
-    print(f"[- Day {65 - numPlayers} -]\n")
+    print(f"[- Day {castSize + 1 - numPlayers} -]\n")
 
     teams = [[],[]]
     teamNames = ["Immune","Lost the Challenge"]
@@ -408,7 +415,7 @@ print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (INDIVIDUAL IMMUNITY)]]{Style.RESET
 proceed()
 
 while numPlayers > 3:
-    print(f"[- Day {65 - numPlayers} -]\n")
+    print(f"[- Day {castSize + 1 - numPlayers} -]\n")
     printPlayersIn(notChosen, mergeName, mergeColor, False)
     
     challengeResults = challengeMerge(False, 0, challenges, notChosen)
@@ -426,7 +433,7 @@ while numPlayers > 3:
 
     proceed()
 printPlayersIn(notChosen, mergeName, mergeColor, True)
-print(f"[- Day 62 -]\n")
+print(f"[- Day {castSize - 2} -]\n")
 print("The final challenge, to decide which of the final 3 makes it to the final 2, is a marathon of every previous challenge in order. The player with the least wins after all 61 rounds will fail to qualify.")
 print(f"{Fore.GREEN}[[FINAL THREE CHALLENGE - THE ULTIMATE SHOWDOWN]]{Style.RESET_ALL}")
 proceed()
@@ -462,7 +469,7 @@ jury.append(fallenAngel)
 bootOrder.insert(0, fallenAngel)
 
 printPlayersIn(notChosen, mergeName, mergeColor, True)
-print(f"[- Day 64 -]\n")
+print(f"[- Day {castSize} -]\n")
 print("The members of the jury, who all were eliminated after the merge, will now decide the winner.")
 print(f"{Fore.GREEN}[[FINAL TWO - JURY VOTE]]{Style.RESET_ALL}")
 proceed()
@@ -521,3 +528,5 @@ for x in range(len(bootOrder)):
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f" [{bootOrder[x].color1}*{Style.RESET_ALL}]")
     else:
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}")
+        
+proceed()
