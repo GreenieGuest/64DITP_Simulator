@@ -1,13 +1,58 @@
 import random
 from colorama import Fore, Style
 
-def test():
-    print("Hello world!")
+def challenge(challenge, player):
+    # Universal challenge modus
+    earnedPoints = 0
+
+    match challenge:
+        case "Physical":
+            # Generic Challenge Format
+            for x in range(4):
+                earnedPoints += random.randint(1, player.physStat)
+        case "Mental":
+            for x in range(4):
+                earnedPoints += random.randint(1, player.stratStat)
+        case "Teamwork":
+            for x in range(4):
+                earnedPoints += random.randint(1, player.socStat)
+        case "Puzzle":
+            playerRoll1 = random.randint(1, player.socStat)
+            playerRoll2 = random.randint(1, player.stratStat)
+            earnedPoints = (playerRoll1 * playerRoll2)
+        case "Obstacle Course":
+            playerRoll1 = random.randint(1, player.physStat)
+            playerRoll2 = random.randint(1, player.stratStat)
+            earnedPoints = (playerRoll1 * playerRoll2)
+        case "Endurance":
+            playerRoll = 1
+            while playerRoll > 0:
+                playerRoll = random.randint(0, player.physStat)
+                earnedPoints += 1
+        case "Memory":
+            playerRoll = 1
+            while playerRoll > 0:
+                playerRoll = random.randint(0, player.stratStat)
+                earnedPoints += 1
+        case "Elimination":
+            playerRoll = 1
+            while playerRoll > 0:
+                playerRoll = random.randint(0, player.socStat)
+                earnedPoints += 1
+        case "Combination":
+            playerRoll1 = random.randint(1, player.physStat)
+            playerRoll2 = random.randint(1, player.stratStat)
+            playerRoll3 = random.randint(1, player.socStat)
+            earnedPoints = (playerRoll1 + playerRoll2 + playerRoll3)
+        case _:
+            earnedPoints = random.randint(1, 20)
+            
+    return earnedPoints
 
 def teamChallenge(challenges, teams, teamNames, teamColors):
-    challengeTypes = ["physical", "memory", "teamwork", "puzzle", "obby", "endurance", "trivia", "elimination", "combination", "luck"]
-    challenge = random.choice(challengeTypes)
-    challenges.append(challenge)
+    challengeTypes = ["Physical", "Mental", "Teamwork", "Puzzle", "Obstacle Course", "Endurance", "Trivia", "Elimination", "Combination", "Luck"]
+    challengeName = random.choice(challengeTypes)
+    challenges.append(challengeName)
 
     teamSize = teams.copy()
     teamSize.sort(key=len)
@@ -16,105 +61,18 @@ def teamChallenge(challenges, teams, teamNames, teamColors):
 
     teamPoints = [0] * len(teams)
     loserId = None
-    match challenge:
-        case "physical":
-            # Generic Challenge Format
-            print("Challenge: Physical")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    for x in range(4):
-                        playerRoll = random.randint(1, teams[team][player].physStat)
-                        if playerRoll < 2:
-                            teams[team][player].notoriety += 5
-                        points += playerRoll
-                teamPoints[team] = points
-        case "mental":
-            print("Challenge: Memory")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    for x in range(4):
-                        playerRoll = random.randint(1, teams[team][player].stratStat)
-                        if playerRoll < 2:
-                            teams[team][player].notoriety += 5
-                        points += playerRoll
-                teamPoints[team] = points
-        case "teamwork":
-            print("Challenge: Teamwork")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    for x in range(4):
-                        playerRoll = random.randint(1, teams[team][player].physStat)
-                        if playerRoll < 2:
-                            teams[team][player].notoriety += 5
-                        points += playerRoll
-                teamPoints[team] = points
-        case "puzzle":
-            print("Challenge: Puzzle")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll1 = random.randint(1, teams[team][player].socStat)
-                    playerRoll2 = random.randint(1, teams[team][player].stratStat)
-                    points += (playerRoll1 * playerRoll2)
-                teamPoints[team] = points
-        case "obby":
-            print("Challenge: Obstacle Course")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll1 = random.randint(1, teams[team][player].physStat)
-                    playerRoll2 = random.randint(1, teams[team][player].stratStat)
-                    points += (playerRoll1 * playerRoll2)
-                teamPoints[team] = points
-        case "endurance":
-            print("Challenge: Endurance")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll = 1
-                    while playerRoll > 0:
-                        playerRoll = random.randint(0, teams[team][player].physStat)
-                        points += 1
-                teamPoints[team] = points
-        case "trivia":
-            print("Challenge: Trivia")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll = 1
-                    while playerRoll > 0:
-                        playerRoll = random.randint(0, teams[team][player].stratStat)
-                        points += 1
-                teamPoints[team] = points
-        case "elimination":
-            print("Challenge: Elimination")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll = 1
-                    while playerRoll > 0:
-                        playerRoll = random.randint(0, teams[team][player].socStat)
-                        points += 1
-                teamPoints[team] = points
-        case "combination":
-            print("Challenge: Combination")
-            for team in range(0, len(teams)):
-                points = 0
-                for player in range(participating):
-                    playerRoll1 = random.randint(1, teams[team][player].physStat)
-                    playerRoll2 = random.randint(1, teams[team][player].stratStat)
-                    playerRoll3 = random.randint(1, teams[team][player].socStat)
-
-                    points += (playerRoll1 + playerRoll2 + playerRoll3)
-                teamPoints[team] = points
-        case _:
-            print("Challenge: Luck")
-            for team in range(0, len(teams)):
-                points = random.randint(1, 20)
-                teamPoints[team] = points
+    print(f"Challenge: {challengeName}")
+            
+    for team in range(0, len(teams)):
+        points = 0
+        participants = random.sample(teams[team], participating) # Allows for random sitouts
+        for player in participants:
+            performance = challenge(challengeName, player)
+            if performance < 2:
+                print(f"{player.name} completely failed the challenge.")
+                player.notoriety += 5
+            points += performance
+        teamPoints[team] = points
 
     # Sort the points per team, then find the team with lowest points and declare them the loser.
     # Functionality for multiple losers later
@@ -130,82 +88,17 @@ def teamChallenge(challenges, teams, teamNames, teamColors):
 
 def challengeMerge(ultimateShowdown, showdownRound, challenges, notChosen):
     if ultimateShowdown == True:
-        challenge = challenges[showdownRound]
+        challengeName = challenges[showdownRound]
     else:
-        challengeTypes = ["physical", "memory", "obby", "endurance", "trivia", "elimination", "combination"]
-        challenge = random.choice(challengeTypes)
-        challenges.append(challenge)
+        challengeTypes = ["Physical", "Mental", "Obstacle Course", "Endurance", "Memory", "Elimination", "Combination"]
+        challengeName = random.choice(challengeTypes)
+        challenges.append(challengeName)
 
     playerPoints = [0] * len(notChosen)
-    match challenge:
-        case "physical":
-            # Generic Challenge Format
-            print("Challenge: Physical")
-            for player in range(len(notChosen)):
-                for x in range(4):
-                    playerRoll = random.randint(1, notChosen[player].physStat)
-                    playerPoints[player] += playerRoll
-        case "memory":
-            print("Challenge: Memory")
-            for player in range(len(notChosen)):
-                for x in range(4):
-                    playerRoll = random.randint(1, notChosen[player].stratStat)
-                    playerPoints[player] += playerRoll
-        case "teamwork":
-            print("Challenge: Teamwork")
-            for player in range(len(notChosen)):
-                for x in range(4):
-                    playerRoll = random.randint(1, notChosen[player].socStat)
-                    playerPoints[player] += playerRoll
-        case "puzzle":
-            print("Challenge: Puzzle")
-            for player in range(len(notChosen)):
-                playerRoll1 = random.randint(1, notChosen[player].socStat)
-                playerRoll2 = random.randint(1, notChosen[player].stratStat)
-                points = (playerRoll1 * playerRoll2)
-                playerPoints[player] = points
-        case "obby":
-            print("Challenge: Obstacle Course")
-            for player in range(len(notChosen)):
-                playerRoll1 = random.randint(1, notChosen[player].physStat)
-                playerRoll2 = random.randint(1, notChosen[player].stratStat)
-                points = (playerRoll1 * playerRoll2)
-                playerPoints[player] = points
-        case "endurance":
-            print("Challenge: Endurance")
-            for player in range(len(notChosen)):
-                playerRoll = 1
-                while playerRoll > 0:
-                    playerRoll = random.randint(0, notChosen[player].physStat)
-                    playerPoints[player] += 1
-        case "trivia":
-            print("Challenge: Trivia")
-            for player in range(len(notChosen)):
-                playerRoll = 1
-                while playerRoll > 0:
-                    playerRoll = random.randint(0, notChosen[player].stratStat)
-                    playerPoints[player] += 1
-        case "elimination":
-            print("Challenge: Elimination")
-            for player in range(len(notChosen)):
-                playerRoll = 1
-                while playerRoll > 0:
-                    playerRoll = random.randint(0, notChosen[player].socStat)
-                    playerPoints[player] += 1
-        case "combination":
-            print("Challenge: Combination")
-            for player in range(len(notChosen)):
-                playerRoll1 = random.randint(1, notChosen[player].physStat)
-                playerRoll2 = random.randint(1, notChosen[player].stratStat)
-                playerRoll3 = random.randint(1, notChosen[player].socStat)
-                points = (playerRoll1 + playerRoll2 + playerRoll3)
-                playerPoints[player] = points
-        case _:
-            print("Challenge: Luck")
-            for player in range(len(notChosen)):
-                points = random.randint(1, 20)
+    print(f"Challenge: {challengeName}")
 
-                playerPoints[player] = points
+    for player in range(len(notChosen)):
+        playerPoints[player] = challenge(challengeName, notChosen[player])
 
     # Sort the points per player, returning a list of players from MOST POINTS to LEAST.
 
