@@ -1,10 +1,10 @@
 import random
 import math
-import json
-import os
 from time import sleep
 from colorama import Fore, Style
+import json
 from challenges import teamChallenge, challengeMerge
+import os
 from pathlib import Path
 
 file = Path(__file__)
@@ -33,7 +33,7 @@ juryName = "Jury"
 # Invincibility Name
 immunityName = "Individual Immunity"
 
-FASTFORWARD = False
+FASTFORWARD = True
 
 PRESET_PROFILES = True
 PROFILE_FILE_PATH = 'profiles.json'
@@ -67,30 +67,194 @@ class Player:
         self.notoriety = notoriety
         self.faction = faction
 
+class Faction:
+    def __init__(self, name, color, founder):
+        self.name = name
+        self.color = color
+        self.founder = founder
+        self.members = [founder]
+        
+    def add_member(self, player):
+        self.members.append(player)
+        player.faction = self
+
+    def disband(self):
+        for member in self.members:
+            member.faction = "Unaffiliated"
+        self.members.clear()
+        
 def decode(obj):
     return Player(obj['name'], 0, 0, None, None, None, obj['physStat'], obj['stratStat'], obj['socStat'], obj['notoriety'], obj['faction'])
     
 # [[ SIM FUNCTIONS ]] ----------------------------------------------------------------------------------
 
-def Elimination(Team):
+def teamEvents(team):
+    for playerA in team:
+        # Form Alliance
+        playerB = random.choice(team)
+        if playerA != playerB and socScope(playerA) >= 3:
+            if playerB.faction == "Unaffiliated":
+                compatibility = abs(socScope(playerA) - socScope(playerB)) + abs(stratScope(playerA) - stratScope(playerB))
+                if compatibility <= 2:
+                    playerA.faction = f"{playerA.name}'s Alliance"
+                    playerB.faction = f"{playerA.name}'s Alliance"
+                    print(f"{playerA.name} has formed an alliance with {playerB.name}")
+            elif playerA.faction != "Unaffiliated" and playerB.faction != "Unaffiliated":
+                # Breakaway Alliance
+                if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerA.faction != f"{playerA.name}'s Alliance":
+                    print(f"{playerA.name} and {playerB.name} have left {playerA.faction} to form their own alliance!")
+                    playerA.faction = f"{playerA.name}'s Alliance"
+                    playerB.faction = f"{playerA.name}'s Alliance"
+                    playerA.notoriety += 3
+                    playerB.notoriety += 3
+            else:
+                if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerB.faction != playerA.faction:
+                    print(f"{playerB.name} has left {playerB.faction} to form an alliance with {playerA.name}")
+                    playerA.faction = f"{playerA.name}'s Alliance"
+                    playerB.faction = f"{playerA.name}'s Alliance"
+                    playerB.notoriety += 3
 
-    # Future voting logic goes here.
+        # Disband Alliance
+        if socScope(playerA) < 2 and playerA.faction != "Unaffiliated":
+            agree = True
+            count = 1
+            for playerB in players:
+                if playerA != playerB and playerB.faction == playerA.faction:
+                    count += 1
+                    if socScope(playerB) < 2 and agree == True:
+                        agree = True
+                    else:
+                        agree = False
 
-    chances = Team.copy()
-    for x in Team:
-        chances.extend(addWeight(x, x.notoriety))
+            if agree == True or count == 1:
+                for player in players:
+                    if player != playerA and player.faction == playerA.faction:
+                        player.faction = "Unaffiliated"
+                print(f"{playerA.faction} has disbanded.")
+                playerA.faction = "Unaffiliated"
 
-    eliminated = random.choice(chances) # For now (and as in 2018) the eliminated contestant is random
+        # Invite into Alliance
+        teammates = random.sample(team, 3)
+        for playerB in teammates:
+            if playerA != playerB and socScope(playerA) >= 3 and playerA.faction != "Unaffiliated":
+                if playerB.faction == "Unaffiliated":
+                    compatibility = abs(socScope(playerA) - socScope(playerB)) + abs(stratScope(playerA) - stratScope(playerB))
+                    if compatibility <= 2:
+                        print(f"{playerA.name} invited {playerB.name} to join {playerA.faction}")
+                        playerB.faction = playerA.faction
+                else:
+                    if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerB.faction != playerA.faction:
+                        print(f"{playerA.name} convinced {playerB.name} to leave {playerB.faction} and join {playerA.faction}")
+                        playerB.faction = playerA.faction
+                        playerB.notoriety += 3
+
+        # Alliance Fracturing
+        if socScope(playerA) < 3 and playerA.faction != "Unaffiliated":
+            opposition = False
+            count = 1
+            for playerB in team:
+                if playerA != playerB and playerB.faction == playerA.faction:
+                    count += 1
+                elif playerB.faction != playerA.faction and opposition == False:
+                    opposition = True
+
+            if count > 6 or opposition == False: # If the alliance has more than 6 members or they are the only alliance remaining on the team, it will fracture
+                for playerB in team:
+                    if playerB != playerA and playerB.faction == playerA.faction:
+                        if socScope(playerB) < 2 or stratScope(playerA) > 4:
+                            playerB.faction = f"{playerA.name}'s Alliance"
+                print(f"{playerA.faction} has fractured.")
+                playerA.faction = f"{playerA.name}'s Alliance"
+
+
+        dynamics = socScope(playerA)
+        if dynamics > 3 and playerA.notoriety > 50:
+            playerA.notoriety -= (dynamics - 3)
+            print(f"{playerA.name} lowers their threat level at camp.")
+        elif dynamics == 1:
+            playerA.notoriety += 1
+            print(f"{playerA.name}'s name is discussed at camp as a potential target.")
+        if playerA.notoriety < 0:
+            playerA.notoriety = 0
+
+def Elimination(originalNominated, originalVotingPool):
+    # Each player in votingPool will vote for one player in nominated
+    # Their decision is mostly based on notoriety but can be affected by factors such as alliance and social
+    tie_count = 0
+    nominated = originalNominated.copy()
+    votingPool = originalVotingPool.copy()
+
+    while tie_count < 2:
+        votes = [0] * len(nominated)
+
+        for voter in votingPool:
+            weight = [0] * len(nominated)
+            for i, player in enumerate(nominated):
+                weight[i] += player.notoriety
+                if player.faction == voter.faction and voter.faction != "Unaffiliated":
+                    weight[i] -= 1000
+                if player == voter:
+                    weight[i] -= 1000
+
+            decision = weight.copy()
+            decision.sort(reverse=True)
+            n = next((i for i, x in enumerate(decision) if x != decision[0]), len(decision)) # see how many people r tied
+
+            # if multiple people have the same weight, decide based on random social roll
+            if n == 1:
+                votes[weight.index(decision[0])] += 1
+                print(f"{voter.name} voted for {nominated[weight.index(decision[0])].name}. That's {votes[weight.index(decision[0])]} votes {nominated[weight.index(decision[0])].name}.")
+            else:
+                choices = []
+                # Force voter to decide between one of the people with the highest vote-out priority
+                for i in range(n):
+                    choices.append(nominated[weight.index(decision[i])])
+                    weight[weight.index(decision[i])] = 0 # allows us to get every player with the same level of weight
+                choices.sort(key=socScope)
+                votes[nominated.index(choices[0])] += 1
+
+                votedFor = nominated[nominated.index(choices[0])].name
+
+                print(f"{voter.name} decided to vote for {votedFor}. That's {votes[nominated.index(choices[0])]} votes {votedFor}.")
+            wait(.5)
+
+
+        decision = votes.copy()
+        decision.sort(reverse=True)
+        n = next((i for i, x in enumerate(decision) if x != decision[0]), len(decision)) # see how many people r tied
+        # If the votes don't tie, continue as normal
+        if n == 1:
+            eliminated = nominated[votes.index(decision[0])]
+            break
+        elif n > 1: # If they do, re-vote - tied people are removed from the voting pool and are the only choices available to vote for
+            tie_count += 1
+            nominated.clear()
+            if tie_count == 1:
+                print(f"{Fore.RED}The votes tied. We will have a re-vote: the tied players will not be able to vote, but the remaining voters will only be allowed to vote for one of the tied players.{Style.RESET_ALL}")
+                for i in range(n):
+                    tietiedPerson = originalNominated[votes.index(decision[i])]
+                    nominated.append(tietiedPerson)
+                    votingPool.remove(tietiedPerson)
+                    votes[votes.index(decision[i])] = 0
+            else: # Since votes tied twice, players go to rocks - players immune but in the voting pool are spared, along with tied players
+                print(f"{Fore.RED}The votes are deadlocked. We will now go to rocks - whoever draws the white rock is eliminated.{Style.RESET_ALL}")
+                rockDrawers = votingPool.copy()
+                for voter in votingPool:
+                    if (voter in originalVotingPool) and (voter not in originalNominated):
+                        rockDrawers.remove(voter)
+                eliminated = random.choice(rockDrawers)
 
     print(f"{castSize + 1 - numPlayers}{suffix(castSize + 1 - numPlayers)} person voted out of {season_name}...")
     wait(3)
     print(f"{eliminated.name}. {numPlayers - 1} remain.\n")
-    Team.remove(eliminated)
+    
+    originalNominated.remove(eliminated)
 
     if numPlayers < 17:
         print(f"They are inducted as the {17 - numPlayers}{suffix(17 - numPlayers)} member of the {juryName}.\n")
         jury.append(eliminated)
 
+    players.remove(eliminated)
     bootOrder.insert(0, eliminated)
 
 def printTeams(showTeams):
@@ -125,7 +289,10 @@ def printPlayersIn(Team, name, color, showTeams):
                 case _:
                     print(x.name)
         else:
-            print(x.name)
+            if x.faction == "Unaffiliated":
+                print(x.name + f" [{x.notoriety}]")
+            else:
+                print(x.name + f" [{x.notoriety}] ({x.faction})")
     print(" ")
 
 def suffix(n):
@@ -137,6 +304,17 @@ def suffix(n):
 def proceed():
     proceed = input("Press enter to proceed.")
     print(" ")
+
+def clearTeams():
+    for x in teams:
+        notChosen.extend(x)
+    teams.clear()
+
+def wait(time): # Lua relic
+    if FASTFORWARD == False:
+        sleep(time)
+
+# Sorting Functions
 
 def getShowdownPoints(player):
     """
@@ -186,15 +364,6 @@ def rollPass(stat):
         return True
     else:
         return False
-
-def clearTeams():
-    for x in teams:
-        notChosen.extend(x)
-    teams.clear()
-
-def wait(time): # Lua relic
-    if FASTFORWARD == False:
-        sleep(time)
 
 # [[ SIMULATION ]] ----------------------------------------------------------------------------------
 
@@ -289,13 +458,19 @@ proceed()
 
 while numPlayers > 48:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
+    for i, team in enumerate(teams):
+        print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
+        teamEvents(team)
     losers = teamChallenge(challenges, teams, teamNames, teamColors)
+    for i, team in enumerate(teams):
+        print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
+        teamEvents(team)
 
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
     printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
     wait(2)
-    Elimination(teams[losers])
+    Elimination(teams[losers], teams[losers])
     numPlayers -= 1
 
     proceed()
@@ -325,13 +500,20 @@ proceed()
 
 while numPlayers > 32:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
+    for i, team in enumerate(teams):
+        print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
+        teamEvents(team)
     losers = teamChallenge(challenges, teams, teamNames, teamColors)
+    for i, team in enumerate(teams):
+        print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
+        teamEvents(team)
+
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
 
     printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
     wait(2)
-    Elimination(teams[losers])
+    Elimination(teams[losers], teams[losers])
     numPlayers -= 1
 
     proceed()
@@ -362,13 +544,20 @@ proceed()
 
 while numPlayers > 16:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
+    for i, team in enumerate(teams):
+        print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
+        teamEvents(team)
     losers = teamChallenge(challenges, teams, teamNames, teamColors)
+    for i, team in enumerate(teams):
+        print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
+        teamEvents(team)
+
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
 
     printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
     wait(2)
-    Elimination(teams[losers])
+    Elimination(teams[losers], teams[losers])
     numPlayers -= 1
 
     proceed()
@@ -384,6 +573,8 @@ proceed()
 
 while numPlayers > 8:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
+
+    teamEvents(players)
 
     teams = [[],[]]
     teamNames = ["Immune","Lost the Challenge"]
@@ -405,10 +596,11 @@ while numPlayers > 8:
     del dangerzone
     notChosen.clear()
 
-    printTeams(False)
+    teamEvents(players)
     wait(2)
+    printTeams(False)
 
-    Elimination(teams[1])
+    Elimination(teams[1], teams[0]+teams[1])
     numPlayers -= 1
     clearTeams()
 
@@ -421,6 +613,8 @@ proceed()
 while numPlayers > 3:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
     printPlayersIn(notChosen, mergeName, mergeColor, False)
+    teamEvents(players)
+    wait(2)
     
     challengeResults = challengeMerge(False, 0, challenges, notChosen)
     immune = notChosen[challengeResults[0]] # In Elite 8 phase, only the top challenge performer is given immunity
@@ -430,8 +624,10 @@ while numPlayers > 3:
     print(f"{immune.name} won {immunityName}.")
     
     wait(2)
+    teamEvents(players)
+    wait(2)
 
-    Elimination(notChosen)
+    Elimination(notChosen, notChosen+[immune])
     numPlayers -= 1
     notChosen.append(immune)
 
@@ -534,4 +730,3 @@ for x in range(len(bootOrder)):
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}")
         
 proceed()
-
