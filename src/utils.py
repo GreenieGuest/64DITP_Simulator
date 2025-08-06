@@ -47,11 +47,17 @@ def notorietyScope(player):
     """
     return random.randint(0, player.notoriety)
 
+def allScope(player):
+    """
+    Get a stat.
+    """
+    return random.randint(1, player.physStat) + random.randint(1, player.stratStat) + random.randint(1, player.socStat)
+
 def randomScope(player):
     """
     Get a stat.
     """
-    return random.randint(1, 64)
+    return random.randint(1, 100)
 
 def rollPass(stat):
     """

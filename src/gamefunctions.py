@@ -8,109 +8,152 @@ file = Path(__file__)
 parent = file.parent
 os.chdir(parent)
 
-from utils import physScope, stratScope, socScope, notorietyScope, randomScope, wait, printVoteNotation
+from utils import physScope, stratScope, socScope, notorietyScope, randomScope, allScope, wait, printVoteNotation
 
-def gameEvents(team, players):
+class Faction: #Unused for now
+    def __init__(self, name, founder):
+        self.name = name
+        self.color = random.choice([Fore.YELLOW, Fore.BLUE, Fore.RED, Fore.GREEN, Fore.MAGENTA, Fore.CYAN])
+        self.founder = founder
+        self.members = [founder]
+
+        self.target = None
+        self.rival = None
+        
+    def add_member(self, player):
+        if player not in self.members:
+            self.members.append(player)
+        if player.faction != self and player.faction != "Unaffiliated":
+            player.faction.kick_member(player)
+        player.faction = self
+        
+    def kick_member(self, player):
+        if player in self.members:
+            self.members.remove(player)
+        player.faction = "Unaffiliated"
+
+    def disband(self):
+        for member in self.members:
+           member.faction = "Unaffiliated"
+        self.members.clear()
+
+def gameEvents(team, quarter):
     for playerA in team:
-        statusTypes = ["formAlliance", "disbandAlliance", "inviteIntoAlliance", "fractureAlliance", "manageNotoriety", "idolHunt"]
-        status = random.choice(statusTypes)
-
-        match status: # Players can only do one game move per free time event realistically (they get plenty of opportunities)
-            case "formAlliance":
-                # Form Alliance
-                playerB = random.choice(team)
-                if playerA != playerB and socScope(playerA) >= 3:
-                    if playerB.faction == "Unaffiliated":
-                        compatibility = abs(socScope(playerA) - socScope(playerB)) + abs(stratScope(playerA) - stratScope(playerB))
-                        if compatibility <= 2:
-                            playerA.faction = f"{playerA.name}'s Alliance"
-                            playerB.faction = f"{playerA.name}'s Alliance"
-                            print(f"{playerA.name} has formed an alliance with {playerB.name}")
-                    elif playerA.faction != "Unaffiliated" and playerB.faction != "Unaffiliated":
-                        # Breakaway Alliance
-                        if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerA.faction != f"{playerA.name}'s Alliance":
-                            print(f"{playerA.name} and {playerB.name} have left {playerA.faction} to form their own alliance!")
-                            playerA.faction = f"{playerA.name}'s Alliance"
-                            playerB.faction = f"{playerA.name}'s Alliance"
-                            playerA.notoriety += 3
-                            playerB.notoriety += 3
-                    else:
-                        if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerB.faction != playerA.faction:
-                            print(f"{playerB.name} has left {playerB.faction} to form an alliance with {playerA.name}")
-                            playerA.faction = f"{playerA.name}'s Alliance"
-                            playerB.faction = f"{playerA.name}'s Alliance"
-                            playerB.notoriety += 3
-            case "disbandAlliance":
-                # Disband Alliance
-                if socScope(playerA) < 2 and playerA.faction != "Unaffiliated":
-                    agree = True
-                    count = 1
-                    for playerB in players:
-                        if playerA != playerB and playerB.faction == playerA.faction:
-                            count += 1
+        statusTypes = ["formAlliance", "disbandAlliance", "inviteIntoAlliance", "fractureAlliance", "manageNotoriety", "idolHunt", "targetAlliance"]
+        
+        for status in random.sample(statusTypes, 3):
+            match status: # Players can only do three game moves per free time event realistically (they get plenty of opportunities)
+                case "formAlliance":
+                    # Form Alliance
+                    playerB = random.choice(team)
+                    if playerA != playerB and socScope(playerA) >= 3:
+                        if playerB.faction == "Unaffiliated" and playerA.faction == "Unaffiliated":
+                            compatibility = abs(socScope(playerA) - socScope(playerB)) + abs(stratScope(playerA) - stratScope(playerB))
+                            if compatibility <= 2:
+                                playerA.faction = Faction(f"{playerA.name}'s Alliance", playerA)
+                                playerA.faction.add_member(playerB)
+                                print(f"{playerA.name} has formed an alliance with {playerB.name}")
+                        elif playerA.faction != "Unaffiliated" and playerB.faction != "Unaffiliated" and playerA.faction.founder != playerA:
+                            # Breakaway Alliance (Dupes not allowed!)
+                            if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerA.faction != f"{playerA.name}'s Alliance":
+                                print(f"{playerA.name} and {playerB.name} have left {playerA.faction.name} to form their own alliance!")
+                                playerA.faction.kick_member(playerA)
+                                playerA.faction = Faction(f"{playerA.name}'s Alliance", playerA)
+                                playerA.faction.add_member(playerB)
+                                playerA.notoriety += 2
+                                playerB.notoriety += 2
+                        elif playerA.faction == "Unaffiliated":
+                            if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerB.faction != playerA.faction:
+                                print(f"{playerB.name} has left {playerB.faction} to form an alliance with {playerA.name}")
+                                playerA.faction = Faction(f"{playerA.name}'s Alliance", playerA)
+                                playerA.faction.add_member(playerB)
+                                playerB.notoriety += 2
+                case "disbandAlliance":
+                    # Disband Alliance
+                    if socScope(playerA) < 2 and playerA.faction != "Unaffiliated":
+                        agree = True
+                        for playerB in playerA.faction.members:
                             if socScope(playerB) < 2 and agree == True:
                                 agree = True
                             else:
                                 agree = False
 
-                    if agree == True or count == 1:
-                        for player in players:
-                            if player != playerA and player.faction == playerA.faction:
-                                player.faction = "Unaffiliated"
-                        print(f"{playerA.faction} has disbanded.")
-                        playerA.faction = "Unaffiliated"
-            case "inviteIntoAlliance":
-                # Invite into Alliance
-                teammates = random.sample(team, 3)
-                for playerB in teammates:
-                    if playerA != playerB and socScope(playerA) >= 3 and playerA.faction != "Unaffiliated":
-                        if playerB.faction == "Unaffiliated":
-                            compatibility = abs(socScope(playerA) - socScope(playerB)) + abs(stratScope(playerA) - stratScope(playerB))
-                            if compatibility <= 2:
-                                print(f"{playerA.name} invited {playerB.name} to join {playerA.faction}")
-                                playerB.faction = playerA.faction
-                        else:
-                            if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerB.faction != playerA.faction:
-                                print(f"{playerA.name} convinced {playerB.name} to leave {playerB.faction} and join {playerA.faction}")
-                                playerB.faction = playerA.faction
-                                playerB.notoriety += 3
-            case "fractureAlliance":
-                # Alliance Fracturing
-                if socScope(playerA) < 3 and playerA.faction != "Unaffiliated":
-                    opposition = False
-                    count = 1
-                    for playerB in team:
-                        if playerA != playerB and playerB.faction == playerA.faction:
-                            count += 1
-                        elif playerB.faction != playerA.faction and opposition == False:
-                            opposition = True
-
-                    if count > 6 or opposition == False: # If the alliance has more than 6 members or they are the only alliance remaining on the team, it will fracture
+                        if agree == True or len(playerA.faction.members) == 1:
+                            print(f"{playerA.faction.name} has disbanded.")
+                            playerA.faction.disband()
+                case "inviteIntoAlliance":
+                    # Invite into Alliance
+                    teammates = random.sample(team, 3)
+                    for playerB in teammates:
+                        if playerA != playerB and socScope(playerA) >= 3 and playerA.faction != "Unaffiliated":
+                            if playerB.faction == "Unaffiliated":
+                                compatibility = abs(socScope(playerA) - socScope(playerB)) + abs(stratScope(playerA) - stratScope(playerB))
+                                if compatibility <= 3:
+                                    print(f"{playerA.name} invited {playerB.name} to join {playerA.faction.name}")
+                                    playerA.faction.add_member(playerB)
+                            else:
+                                if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerB.faction != playerA.faction:
+                                    print(f"{playerA.name} convinced {playerB.name} to leave {playerB.faction.name} and join {playerA.faction.name}")
+                                    playerA.faction.add_member(playerB)
+                                    playerB.notoriety += 2
+                case "fractureAlliance":
+                    # Alliance Fracturing
+                    if socScope(playerA) < 3 and playerA.faction != "Unaffiliated" and playerA.faction.founder != playerA:
+                        opposition = False
                         for playerB in team:
-                            if playerB != playerA and playerB.faction == playerA.faction:
-                                if socScope(playerB) < 2 or stratScope(playerA) > 4:
-                                    playerB.faction = f"{playerA.name}'s Alliance"
-                        print(f"{playerA.faction} has fractured.")
-                        playerA.faction = f"{playerA.name}'s Alliance"
-            case "manageNotoriety":
-                dynamics = socScope(playerA)
-                if dynamics > 3 and playerA.notoriety > 50:
-                    playerA.notoriety -= (dynamics - 3)
-                    print(f"{playerA.name} lowers their threat level at camp.")
-                elif dynamics == 1:
-                    playerA.notoriety += 1
-                    print(f"{playerA.name}'s name is discussed at camp as a potential target.")
-                if playerA.notoriety < 0:
-                    playerA.notoriety = 0
-            case "idolHunt":
-                # Find Idol
-                idolHunt = randomScope(playerA)
-                if idolHunt > 60 and physScope(playerA) > 2:
-                    print(f"{playerA.name} finds a Savior.")
-                    playerA.idols.append("Savior")
-                elif idolHunt == 59 and physScope(playerA):
-                    print(f"{playerA.name} finds a Guardian Angel.")
-                    playerA.idols.append("Guardian Angel")
+                            if playerB.faction != playerA.faction and opposition == False:
+                                opposition = True
+
+                        if len(playerA.faction.members) > 7 or opposition == False: # If the alliance has more than 7 members or they are the only alliance remaining on the team, it will fracture
+                            willingToLeave = []
+                            for playerB in team:
+                                if playerB != playerA and playerB.faction == playerA.faction:
+                                    if socScope(playerB) < 2 or stratScope(playerA) > 4:
+                                        willingToLeave.append(playerB)
+                            if len(willingToLeave) >= 2:
+                                print(f"{playerA.faction.name} has fractured.")
+                                playerA.faction.kick_member(playerA)
+                                playerA.faction = Faction(f"{playerA.name}'s Alliance", playerA)
+                                for player in willingToLeave:
+                                    playerA.faction.add_member(player)
+
+                case "manageNotoriety":
+                    dynamics = socScope(playerA)
+                    if dynamics > 3 and playerA.notoriety > 50:
+                        playerA.notoriety -= (dynamics - 2)
+                        print(f"{playerA.name} lowers their threat level at camp.")
+                    elif dynamics == 1:
+                        playerA.notoriety += 1
+                        print(f"{playerA.name}'s name is discussed at camp as a potential target.")
+                    if playerA.notoriety < 0:
+                        playerA.notoriety = 0
+                case "idolHunt":
+                    # Find Idol
+                    idolHunt = randomScope(playerA)
+                    if idolHunt > 95 and physScope(playerA) > 2:
+                        print(f"{playerA.name} finds a Savior.")
+                        playerA.idols.append("Savior")
+                    elif idolHunt == 95 and physScope(playerA) > 2:
+                        print(f"{playerA.name} finds a Guardian Angel.")
+                        playerA.idols.append("Guardian Angel")
+                case "targetAlliance":
+                    # Convince alliance to target someone
+                    if (stratScope(playerA) > 3 or socScope(playerA) > 3) and playerA.faction != "Unaffiliated":
+                        threatRanking = team.copy()
+                        for teammate in threatRanking:
+                            if teammate.faction == playerA.faction:
+                                threatRanking.remove(teammate)
+                        if quarter == 1:
+                            threatRanking.sort(key=allScope)
+
+                            playerA.faction.target = threatRanking[0]
+                            print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {playerA.faction.target.name} to strengthen the team.")
+                        else:
+                            threatRanking.sort(key=allScope)
+
+                            playerA.faction.target = threatRanking[0]
+                            print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {playerA.faction.target.name} for being a threat.")
+
     print(" ")
 
 def schoolyardPick(playerPool, teams, teamColors):
@@ -197,6 +240,8 @@ def elimination(originalNominated, originalVotingPool):
                     weight[i] -= 1000
                 if stratScope(player) > 3 and stratScope(voter) > 3: # Fear of idol play
                     weight[i] -= 5
+                if voter.faction != "Unaffiliated" and player == voter.faction.target:
+                    weight[i] += 5
 
             decision = weight.copy()
             decision.sort(reverse=True)
@@ -236,7 +281,7 @@ def elimination(originalNominated, originalVotingPool):
 
                 if (biggestThreat not in safeViaIdol) and (biggestThreat == player or (player.faction != "Unaffiliated" and biggestThreat.faction == player.faction and secondThreat.faction != player.faction and secondThreat != player)):
                     print(f"{Fore.GREEN}{player.name} plays their Savior for {biggestThreat.name}.{Style.RESET_ALL}")
-                    player.notoriety += 5
+                    player.notoriety += 3
                     # Add saved player to the list of the immune contestants to prevent them from being involved in rock draws
                     safeViaIdol.append(biggestThreat)
 
@@ -257,7 +302,7 @@ def elimination(originalNominated, originalVotingPool):
 
                 if (inDanger not in safeViaIdol) and (inDanger == player or (player.faction != "Unaffiliated" and inDanger.faction == player.faction and nextInDanger.faction != player.faction and nextInDanger != player)):
                     print(f"{Fore.GREEN}{player.name} plays their Guardian Angel for {inDanger.name}.{Style.RESET_ALL}")
-                    player.notoriety += 10
+                    player.notoriety += 5
                     # Add saved player to the list of the immune contestants to prevent them from being involved in rock draws
                     safeViaIdol.append(inDanger)
                     nullifiedcount.append(f"{decision[0]}*")

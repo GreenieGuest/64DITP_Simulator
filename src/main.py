@@ -5,14 +5,14 @@ import math
 import json
 import os
 
+file = Path(__file__)
+parent = file.parent
+os.chdir(parent)
+
 from challenges import teamChallenge, challengeMerge
 from gamefunctions import gameEvents, schoolyardPick, elimination
 from utils import suffix, getShowdownPoints, proceed, wait
 from config import season_name, names, q1Names, q1Colors, q2Names, q2Colors, q3Names, q3Colors, mergeName, q4Colors, mergeColor, juryName, immunityName, PRESET_PROFILES, PROFILE_FILE_PATH
-
-file = Path(__file__)
-parent = file.parent
-os.chdir(parent)
 
 # If you know what you're doing, have fun tweaking below! ----------------------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ numPlayers = len(names)
 jury = []
 bootOrder = []
 voteNotations = []
+factions = []
 challenges = []
 quarter = 1
 
@@ -45,22 +46,6 @@ class Player:
         self.socStat = socStat
         self.notoriety = notoriety
         self.faction = faction
-
-#class Faction: #Unused
-#    def __init__(self, name, color, founder):
-#        self.name = name
-#        self.color = color
-#        self.founder = founder
-#        self.members = [founder]
-#        
-#    def add_member(self, player):
-#        self.members.append(player)
-#        player.faction = self
-#
-#    def disband(self):
-#        for member in self.members:
-#           member.faction = "Unaffiliated"
-#        self.members.clear()
 
 def decode(obj):
     return Player(obj['name'], obj['physStat'], obj['stratStat'], obj['socStat'], obj['notoriety'], obj['faction'])
@@ -93,7 +78,7 @@ def printTeams(showTeams):
                 if z.faction == "Unaffiliated":
                     print(z.name + f" [{z.notoriety}]")
                 else:
-                    print(z.name + f" [{z.notoriety}] ({z.faction})")
+                    print(z.name + f" [{z.notoriety}] ({Style.DIM}{z.faction.color}{z.faction.name}{Style.RESET_ALL})")
         print(" ")
         
 def printPlayersIn(Team, name, color, showTeams):
@@ -113,7 +98,7 @@ def printPlayersIn(Team, name, color, showTeams):
             if x.faction == "Unaffiliated":
                 print(x.name + f" [{x.notoriety}]")
             else:
-                print(x.name + f" [{x.notoriety}] ({x.faction})")
+                print(x.name + f" [{x.notoriety}] ({Style.DIM}{x.faction.color}{x.faction.name}{Style.RESET_ALL})")
     print(" ")
 
 def clearTeams():
@@ -128,30 +113,22 @@ def mergeElimination(originalNominated, originalVotingPool):
     wait(3)
     print(f"{eliminated.name}. {numPlayers - 1} remain.\n")
     print(f"Vote Notation: {votingNotation}")
-    voteNotations.append(votingNotation)
     
-    originalNominated.remove(eliminated)
-
-    if numPlayers < 17:
-        print(f"They are inducted as the {17 - numPlayers}{suffix(17 - numPlayers)} member of the {juryName}.\n")
-        jury.append(eliminated)
-
-    players.remove(eliminated)
-    bootOrder.insert(0, eliminated)
+    Eliminate(eliminated, originalNominated, votingNotation)
 
 def teamRound():
     global numPlayers
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
     for i, team in enumerate(teams):
         print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
-        gameEvents(team, players)
+        gameEvents(team, quarter)
     wait(1)
     losers = teamChallenge(challenges, teams, teamNames, teamColors)
     print(f"\n{teamNames[losers]} lost the challenge!")
     wait(1)
     for i, team in enumerate(teams):
         print(f"{teamColors[i]}[[{teamNames[i]} Events]]{Style.RESET_ALL}")
-        gameEvents(team, players)
+        gameEvents(team, quarter)
     wait(1)
 
     printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
@@ -162,13 +139,8 @@ def teamRound():
     wait(3)
     print(f"{eliminated.name}. {numPlayers - 1} remain.\n")
     print(f"Vote Notation: {votingNotation}")
-    voteNotations.append(votingNotation)
     
-    teams[losers].remove(eliminated)
-
-    players.remove(eliminated)
-    bootOrder.insert(0, eliminated)
-    numPlayers -= 1
+    Eliminate(eliminated, teams[losers], votingNotation)
     
     proceed()
 
@@ -186,6 +158,26 @@ def teamSwap(numTeams):
         teamId += 1
         if teamId > numTeams - 1:
             teamId = 0
+
+def Eliminate(Player, team, voteNotation):
+    global numPlayers
+    if numPlayers < 3:
+        print(" ")
+    elif numPlayers == 3:
+        print(f"They are inducted as the {17 - numPlayers}th and final member of the {juryName}.\n")
+        jury.append(Player)
+    elif numPlayers < 17:
+        print(f"They are inducted as the {17 - numPlayers}{suffix(17 - numPlayers)} member of the {juryName}.\n")
+        jury.append(Player)
+    numPlayers -= 1
+    bootOrder.insert(0, Player)
+    team.remove(Player)
+    voteNotations.append(voteNotation)
+
+
+    if Player.faction != "Unaffiliated":
+        Player.faction.kick_member(Player)
+
 
 # [[ SIMULATION ]] ----------------------------------------------------------------------------------
 
@@ -275,7 +267,7 @@ proceed()
 while numPlayers > 8:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
 
-    gameEvents(players, players)
+    gameEvents(notChosen, quarter)
 
     teams = [[],[]]
     teamNames = ["Immune","Lost the Challenge"]
@@ -297,12 +289,11 @@ while numPlayers > 8:
     del dangerzone
     notChosen.clear()
 
-    gameEvents(players, players)
+    gameEvents(teams[0] + teams[1], quarter)
     wait(2)
     printTeams(False)
 
     mergeElimination(teams[1], teams[0]+teams[1])
-    numPlayers -= 1
     clearTeams()
 
     proceed()
@@ -314,7 +305,7 @@ proceed()
 while numPlayers > 3:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
     printPlayersIn(notChosen, mergeName, mergeColor, False)
-    gameEvents(players, players)
+    gameEvents(notChosen, quarter)
     wait(2)
     
     challengeResults = challengeMerge(False, 0, challenges, notChosen)
@@ -325,11 +316,10 @@ while numPlayers > 3:
     print(f"{immune.name} won {immunityName}.")
     
     wait(2)
-    gameEvents(players, players)
+    gameEvents(notChosen, quarter)
     wait(2)
 
     mergeElimination(notChosen, notChosen+[immune])
-    numPlayers -= 1
     notChosen.append(immune)
 
     proceed()
@@ -362,13 +352,10 @@ else: #Tie
 
 wait(1)
 
-voteNotations.append(f"{notChosen[0].showdownPoints}-{notChosen[1].showdownPoints}-{notChosen[2].showdownPoints}")
-notChosen.remove(fallenAngel)
+showdownNotation = f"{notChosen[0].showdownPoints}-{notChosen[1].showdownPoints}-{notChosen[2].showdownPoints}"
 print(f"{fallenAngel.name} failed to qualify for the finale after the Ultimate Showdown, and was eliminated in 3rd place.")
-print(f"They are inducted as the {17 - numPlayers}th and final member of the {juryName}.\n")
-numPlayers -= 1
-jury.append(fallenAngel)
-bootOrder.insert(0, fallenAngel)
+    
+Eliminate(fallenAngel, notChosen, showdownNotation)
 
 printPlayersIn(notChosen, mergeName, mergeColor, True)
 print(f"[- Day {castSize} -]\n")
@@ -392,8 +379,10 @@ for x in range(len(jury)):
 runnerUp = None
 if notChosen[0].juryVotes < notChosen[1].juryVotes:
     runnerUp = notChosen[0]
+    winner = notChosen[1]
 elif notChosen[1].juryVotes < notChosen[0].juryVotes:
     runnerUp = notChosen[1]
+    winner = notChosen[0]
 else: #Tie
     print(f"The votes tied. {fallenAngel.name}, the final {juryName} member, will cast an additional final vote.")
     wait(1)
@@ -407,21 +396,17 @@ else: #Tie
 
     if notChosen[0].juryVotes < notChosen[1].juryVotes:
         runnerUp = notChosen[0]
+        winner = notChosen[1]
     else:
         runnerUp = notChosen[1]
+        winner = notChosen[0]
 
-bootOrder.insert(0, runnerUp)
-notChosen.remove(runnerUp)
 print(f"{runnerUp.name} failed to win the {juryName} Vote, and was eliminated in 2nd place as the runner-up.\n")
-numPlayers -= 1
 
-winner = random.choice(notChosen)
-bootOrder.insert(0, winner)
-notChosen.remove(winner)
 print(f"{winner.name} is the winner of {season_name}.")
 
-voteNotations.append(f"{runnerUp.juryVotes}-{winner.juryVotes}")
-voteNotations.append(f"{winner.juryVotes}-{runnerUp.juryVotes}")
+Eliminate(runnerUp, notChosen, f"{runnerUp.juryVotes}-{winner.juryVotes}")
+Eliminate(winner, notChosen, f"{winner.juryVotes}-{runnerUp.juryVotes}") # even winners must die the same death
 
 proceed()
 for x in range(len(bootOrder)):

@@ -2,8 +2,512 @@
   {
     "name": "Erika Faust",
     "physStat": 4,
-    "stratStat": 6,
+    "stratStat": 5,
     "socStat": 6,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Boat Crew",
+    "physStat": 3,
+    "stratStat": 6,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Stunt Devil",
+    "physStat": 5,
+    "stratStat": 3,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Muscles",
+    "physStat": 6,
+    "stratStat": 2,
+    "socStat": 5,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Ellie Lander",
+    "physStat": 3,
+    "stratStat": 3,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Polandball",
+    "physStat": 3,
+    "stratStat": 2,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Gamer",
+    "physStat": 2,
+    "stratStat": 3,
+    "socStat": 5,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Boxy",
+    "physStat": 4,
+    "stratStat": 3,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Americaball",
+    "physStat": 4,
+    "stratStat": 4,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Big Rig",
+    "physStat": 6,
+    "stratStat": 5,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Boston Rob",
+    "physStat": 4,
+    "stratStat": 6,
+    "socStat": 5,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Dog",
+    "physStat": 5,
+    "stratStat": 4,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Frederick",
+    "physStat": 3,
+    "stratStat": 4,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Jackson",
+    "physStat": 4,
+    "stratStat": 4,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Joey",
+    "physStat": 5,
+    "stratStat": 4,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Josephine Mercier",
+    "physStat": 3,
+    "stratStat": 3,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Lauren",
+    "physStat": 4,
+    "stratStat": 6,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Martin",
+    "physStat": 2,
+    "stratStat": 5,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Petra",
+    "physStat": 5,
+    "stratStat": 5,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Carl Grimes",
+    "physStat": 4,
+    "stratStat": 3,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Vriska Serket",
+    "physStat": 4,
+    "stratStat": 5,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Cashy",
+    "physStat": 4,
+    "stratStat": 2,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Horatio Caine",
+    "physStat": 4,
+    "stratStat": 4,
+    "socStat": 5,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Isaac Creighton",
+    "physStat": 4,
+    "stratStat": 3,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Teresa Tayliss",
+    "physStat": 3,
+    "stratStat": 3,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Nagito Komaeda",
+    "physStat": 3,
+    "stratStat": 6,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Atom",
+    "physStat": 5,
+    "stratStat": 4,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Captain Hammer",
+    "physStat": 6,
+    "stratStat": 1,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Four",
+    "physStat": 4,
+    "stratStat": 4,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Germanyball",
+    "physStat": 5,
+    "stratStat": 2,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Heathcliff",
+    "physStat": 3,
+    "stratStat": 3,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Homestar Runner",
+    "physStat": 5,
+    "stratStat": 1,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Jack Dawson",
+    "physStat": 4,
+    "stratStat": 3,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "King Lorenzo",
+    "physStat": 5,
+    "stratStat": 5,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Tom",
+    "physStat": 4,
+    "stratStat": 5,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Mitochondria",
+    "physStat": 5,
+    "stratStat": 3,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Watch",
+    "physStat": 2,
+    "stratStat": 3,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Death Man",
+    "physStat": 5,
+    "stratStat": 3,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Dr Horrible",
+    "physStat": 2,
+    "stratStat": 4,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Todd",
+    "physStat": 2,
+    "stratStat": 3,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Nitro",
+    "physStat": 5,
+    "stratStat": 5,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Roco",
+    "physStat": 3,
+    "stratStat": 3,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Tommy Walter",
+    "physStat": 3,
+    "stratStat": 3,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Terezi Pyrope",
+    "physStat": 4,
+    "stratStat": 4,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "2-D",
+    "physStat": 2,
+    "stratStat": 2,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "ChrisPop",
+    "physStat": 3,
+    "stratStat": 3,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Koda",
+    "physStat": 3,
+    "stratStat": 6,
+    "socStat": 3,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "OG",
+    "physStat": 5,
+    "stratStat": 5,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Hunter Moses",
+    "physStat": 4,
+    "stratStat": 1,
+    "socStat": 6,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Ronny the Banana",
+    "physStat": 1,
+    "stratStat": 1,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Tom Brady",
+    "physStat": 6,
+    "stratStat": 4,
+    "socStat": 5,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Satan",
+    "physStat": 3,
+    "stratStat": 4,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Transparent Red",
+    "physStat": 5,
+    "stratStat": 4,
+    "socStat": 5,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Joe",
+    "physStat": 2,
+    "stratStat": 2,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Hexbug",
+    "physStat": 1,
+    "stratStat": 1,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "The Miser",
+    "physStat": 3,
+    "stratStat": 4,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Trogdor the Burninator",
+    "physStat": 5,
+    "stratStat": 1,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Billy Blockhead",
+    "physStat": 3,
+    "stratStat": 2,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Mr Wilson",
+    "physStat": 1,
+    "stratStat": 4,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Pencil",
+    "physStat": 2,
+    "stratStat": 1,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "V2",
+    "physStat": 5,
+    "stratStat": 4,
+    "socStat": 4,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Chad",
+    "physStat": 6,
+    "stratStat": 1,
+    "socStat": 1,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Lukey",
+    "physStat": 3,
+    "stratStat": 1,
+    "socStat": 2,
+    "notoriety": 0,
+    "faction": "Unaffiliated"
+  },
+  {
+    "name": "Mr Ben",
+    "physStat": 1,
+    "stratStat": 1,
+    "socStat": 1,
     "notoriety": 0,
     "faction": "Unaffiliated"
   }

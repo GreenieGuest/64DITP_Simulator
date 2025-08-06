@@ -1,4 +1,3 @@
-import random
 from colorama import Fore, Style
 from time import sleep
 
@@ -26,5 +25,5 @@ immunityName = "Individual Immunity"
 
 FASTFORWARD = True
 
-PRESET_PROFILES = False
+PRESET_PROFILES = True
 PROFILE_FILE_PATH = 'profiles.json'
