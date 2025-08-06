@@ -70,7 +70,7 @@ def teamChallenge(challenges, teams, teamNames, teamColors):
             performance = challenge(challengeName, player)
             if performance < 2:
                 print(f"{player.name} completely failed the challenge.")
-                player.notoriety += 5
+                player.notoriety += 1
             points += performance
         teamPoints[team] = points
 
