@@ -23,6 +23,11 @@ juryName = "Jury"
 # Invincibility Name
 immunityName = "Individual Immunity"
 
+firstSwapThreshold = 48 # Default: 48 out of 64
+secondSwapThreshold = 32 # Default: 32 out of 64
+mergeThreshold = 16 # Default: 16 out of 64
+finalThreshold = 8 # Default: 8 out of 64
+
 FASTFORWARD = True
 
 PRESET_PROFILES = True

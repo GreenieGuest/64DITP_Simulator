@@ -12,19 +12,11 @@ os.chdir(parent)
 from challenges import teamChallenge, challengeMerge
 from gamefunctions import gameEvents, schoolyardPick, elimination
 from utils import suffix, getShowdownPoints, proceed, wait
-from config import season_name, names, q1Names, q1Colors, q2Names, q2Colors, q3Names, q3Colors, mergeName, q4Colors, mergeColor, juryName, immunityName, PRESET_PROFILES, PROFILE_FILE_PATH
+from config import season_name, names, q1Names, q1Colors, q2Names, q2Colors, q3Names, q3Colors, mergeName, q4Colors, mergeColor, juryName, immunityName, firstSwapThreshold, secondSwapThreshold, mergeThreshold, finalThreshold, PRESET_PROFILES, PROFILE_FILE_PATH
 
 # If you know what you're doing, have fun tweaking below! ----------------------------------------------------------------------------------
 
-# [[ IMPORTANT SIMULATION STUFF ]] ----------------------------------------------------------------------------------
-castSize = len(names)
-numPlayers = len(names)
-jury = []
-bootOrder = []
-voteNotations = []
-factions = []
-challenges = []
-quarter = 1
+# [[ SIM FUNCTIONS ]] ----------------------------------------------------------------------------------
 
 class Player:
     def __init__(self, name, physStat, stratStat, socStat, notoriety, faction):
@@ -57,8 +49,6 @@ def logBootOrder():
         log.write("\n")
 
     print("Simulation boot order logged in simulations.txt")
-    
-# [[ SIM FUNCTIONS ]] ----------------------------------------------------------------------------------
 
 def printTeams(showTeams):
     for x in range(len(teams)):
@@ -116,6 +106,12 @@ def mergeElimination(originalNominated, originalVotingPool):
     
     Eliminate(eliminated, originalNominated, votingNotation)
 
+def getSmallestTeamSize():
+    teamSize = teams.copy()
+    teamSize.sort(key=len)
+
+    return len(teamSize[0])
+
 def teamRound():
     global numPlayers
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
@@ -164,10 +160,10 @@ def Eliminate(Player, team, voteNotation):
     if numPlayers < 3:
         print(" ")
     elif numPlayers == 3:
-        print(f"They are inducted as the {17 - numPlayers}th and final member of the {juryName}.\n")
+        print(f"They are inducted as the {mergeThreshold + 1 - numPlayers}th and final member of the {juryName}.\n")
         jury.append(Player)
-    elif numPlayers < 17:
-        print(f"They are inducted as the {17 - numPlayers}{suffix(17 - numPlayers)} member of the {juryName}.\n")
+    elif numPlayers <= mergeThreshold:
+        print(f"They are inducted as the {mergeThreshold + 1 - numPlayers}{suffix(mergeThreshold + 1 - numPlayers)} member of the {juryName}.\n")
         jury.append(Player)
     numPlayers -= 1
     bootOrder.insert(0, Player)
@@ -200,6 +196,16 @@ if PRESET_PROFILES == True:
         print(f"Error: syntax error in '{PROFILE_FILE_PATH}'")
     except Exception as e:
         print(f"Error: {e}")
+
+castSize = len(names)
+numPlayers = len(names)
+jury = []
+bootOrder = []
+voteNotations = []
+factions = []
+challenges = []
+quarter = 1
+
 proceed()
 
 notChosen = players.copy()
@@ -215,7 +221,7 @@ printTeams(True)
 print(f"{Fore.GREEN}[[FIRST QUARTER - FOUR-TEAM PHASE]]{Style.RESET_ALL}")
 proceed()
 
-while numPlayers > 48:
+while numPlayers > firstSwapThreshold and getSmallestTeamSize() > 1:
     teamRound()
 printTeams(True)
 print(f"{Fore.GREEN}[[SECOND QUARTER - THREE-TEAM PHASE]]{Style.RESET_ALL}")
@@ -233,7 +239,7 @@ printTeams(True)
 print("The teams have been swapped randomly. The Second Quarter begins.")
 proceed()
 
-while numPlayers > 32:
+while numPlayers > secondSwapThreshold and getSmallestTeamSize() > 1:
     teamRound()
 printTeams(True)
 print(f"{Fore.GREEN}[[THIRD QUARTER - TWO-TEAM PHASE]]{Style.RESET_ALL}")
@@ -252,7 +258,7 @@ printTeams(True)
 print("The halfway point of players has been reached. The teams have been swapped again. The Third Quarter begins.")
 proceed()
 
-while numPlayers > 16:
+while numPlayers > mergeThreshold and getSmallestTeamSize() > 1:
     teamRound()
 printTeams(False)
 proceed()
@@ -264,7 +270,7 @@ printPlayersIn(notChosen, mergeName, mergeColor, True)
 print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (HAVE-GOTS vs. HAVE-NOTS)]]{Style.RESET_ALL}")
 proceed()
 
-while numPlayers > 8:
+while numPlayers > finalThreshold:
     print(f"[- Day {castSize + 1 - numPlayers} -]\n")
 
     gameEvents(notChosen, quarter)
@@ -410,11 +416,11 @@ Eliminate(winner, notChosen, f"{winner.juryVotes}-{runnerUp.juryVotes}") # even 
 
 proceed()
 for x in range(len(bootOrder)):
-    if x < 16:
+    if x < mergeThreshold:
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f" [{bootOrder[x].color1}*{bootOrder[x].color2}*{bootOrder[x].color3}*{Style.RESET_ALL}] - {voteNotations[castSize - x - 1]}")
-    elif x < 32:
+    elif x < secondSwapThreshold:
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color3}{bootOrder[x].name}{Style.RESET_ALL}" + f" [{bootOrder[x].color1}*{bootOrder[x].color2}*{Style.RESET_ALL}] - {voteNotations[castSize - x - 1]}")
-    elif x < 48:
+    elif x < firstSwapThreshold:
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f" [{bootOrder[x].color1}*{Style.RESET_ALL}] - {voteNotations[castSize - x - 1]}")
     else:
         print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL} - {voteNotations[castSize - x - 1]}")

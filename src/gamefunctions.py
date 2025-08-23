@@ -83,7 +83,10 @@ def gameEvents(team, quarter):
                             playerA.faction.disband()
                 case "inviteIntoAlliance":
                     # Invite into Alliance
-                    teammates = random.sample(team, 3)
+                    if len(team) < 3:
+                        teammates = random.sample(team, 1)
+                    else:
+                        teammates = random.sample(team, 3)
                     for playerB in teammates:
                         if playerA != playerB and socScope(playerA) >= 3 and playerA.faction != "Unaffiliated":
                             if playerB.faction == "Unaffiliated":
@@ -342,13 +345,18 @@ def elimination(originalNominated, originalVotingPool):
                 for voter in votingPool:
                     if ((voter in originalVotingPool) and (voter not in originalNominated)) or (voter in safeViaIdol):
                         rockDrawers.remove(voter)
-                if not rockDrawers: # All Players Immune due to two idols being played, causing a deadlo0ck
+                if not rockDrawers: # All Players Immune due to two idols being played, causing a deadlock
                     print(f"{Fore.RED}Since there are no eligible players to vote for, all tied players' immunities will be nullified.{Style.RESET_ALL}")
                     # If a player used an idol or won individual immunity, they shall be spared
                     rockDrawers = originalNominated.copy()
                     for player in safeViaIdol:
                         rockDrawers.remove(player)
-                    eliminated = random.choice(rockDrawers)
+                    if not rockDrawers: # Special case where all of the remaining eligible players played idols (Almost Advantagegeddon), therefore no one can be voted for even with nullified tie immunity
+                        print(f"{Fore.RED}There are still no eligible players to vote for. All idols will be nullified.{Style.RESET_ALL}")
+                        rockDrawers = originalNominated.copy()
+                        eliminated = random.choice(rockDrawers)
+                    else:
+                        eliminated = random.choice(rockDrawers)
                 else:
                     eliminated = random.choice(rockDrawers)
     return eliminated, printVoteNotation(votecount, revotecount, nullifiedcount)

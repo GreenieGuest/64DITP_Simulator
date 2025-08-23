@@ -99,6 +99,8 @@ def printVoteNotation(votecount, revotecount, nullifiedcount):
             else:
                 oldnotation += f"-{num}"
 
+        if not notation:
+            notation = "0-0"
         notation += f" ({oldnotation})"
     elif nullifiedcount:
         for num in votecount:
@@ -123,6 +125,8 @@ def printVoteNotation(votecount, revotecount, nullifiedcount):
             elif num > 0:
                 oldnotation += f"-{num}"
 
+        if not notation:
+            notation = "0-0"
         notation += f" ({oldnotation})"
     else:
         for num in votecount:
