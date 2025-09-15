@@ -51,11 +51,12 @@ def logBootOrder():
     print("Simulation boot order logged in simulations.txt")
 
 def printIdols():
-    print(f"{Fore.GREEN}[[ Idols ]]{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}[[Idols]]{Style.RESET_ALL}")
     for player in players:
         if len(player.idols):
             for x in player.idols:
                 print(player.name + " - " + x)
+    print(" ")
 
 def printTeams(showTeams):
     for x in range(len(teams)):
@@ -376,7 +377,7 @@ while numPlayers > 3:
     immune.notoriety += 1
 
     notChosen.remove(immune)
-    print(f"{immune.name} won {immunityName}.")
+    print(f"{immune.name} won {immunityName}.\n")
     
     wait(2)
     gameEvents(notChosen, quarter)

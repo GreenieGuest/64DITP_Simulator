@@ -64,7 +64,7 @@ def gameEvents(team, quarter):
                                 playerB.notoriety += 2
                         elif playerA.faction == "Unaffiliated":
                             if stratScope(playerB) > 4 and socScope(playerB) < 3 and playerB.faction != playerA.faction:
-                                print(f"{playerB.name} has left {playerB.faction} to form an alliance with {playerA.name}")
+                                print(f"{playerB.name} has left {playerB.faction.name} to form an alliance with {playerA.name}")
                                 playerA.faction = Faction(f"{playerA.name}'s Alliance", playerA)
                                 playerA.faction.add_member(playerB)
                                 playerB.notoriety += 2
@@ -150,16 +150,16 @@ def gameEvents(team, quarter):
                             threatBasis = random.randint(1, 6)
                             match threatBasis:
                                 case 1:
-                                    threatRanking.sort(key=physScope, reverse=True)
+                                    threatRanking.sort(key=physScope)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for poor challenge performance.")
                                 case 2:
-                                    threatRanking.sort(key=stratScope, reverse=True)
+                                    threatRanking.sort(key=stratScope)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being untrustworthy.")
                                 case 3:
-                                    threatRanking.sort(key=socScope, reverse=True)
+                                    threatRanking.sort(key=socScope)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a social outcast.")
                                 case _:
-                                    threatRanking.sort(key=allScope, reverse=True)
+                                    threatRanking.sort(key=allScope)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} to strengthen the team.")
 
                             playerA.faction.target = threatRanking[0]
@@ -167,16 +167,16 @@ def gameEvents(team, quarter):
                             threatBasis = random.randint(1, 6)
                             match threatBasis:
                                 case 1:
-                                    threatRanking.sort(key=physScope)
+                                    threatRanking.sort(key=physScope, reverse=True)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a challenge threat.")
                                 case 2:
-                                    threatRanking.sort(key=stratScope)
+                                    threatRanking.sort(key=stratScope, reverse=True)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a strategic threat.")
                                 case 3:
-                                    threatRanking.sort(key=socScope)
+                                    threatRanking.sort(key=socScope, reverse=True)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a social threat.")
                                 case _:
-                                    threatRanking.sort(key=allScope)
+                                    threatRanking.sort(key=allScope, reverse=True)
                                     print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being an overall threat.")
 
                             playerA.faction.target = threatRanking[0]
@@ -247,6 +247,8 @@ def elimination(originalNominated, originalVotingPool):
     tie_count = 0
     nominated = originalNominated.copy()
     votingPool = originalVotingPool.copy()
+    votedFor = [] # Voted-for person per player are taken in order of their index in the original voting pool
+    
     safeViaIdol = []
 
     # Vote Notation
@@ -255,6 +257,7 @@ def elimination(originalNominated, originalVotingPool):
     nullifiedcount = []
 
     while tie_count < 2:
+        # Vote counts per player are taken in order of their index in nominated
         votes = [0] * len(nominated)
 
         for voter in votingPool:
@@ -277,7 +280,7 @@ def elimination(originalNominated, originalVotingPool):
             # if multiple people have the same weight, decide based on random social roll
             if n == 1:
                 votes[weight.index(decision[0])] += 1
-                print(f"{voter.name} voted for {nominated[weight.index(decision[0])].name}. That's {votes[weight.index(decision[0])]} votes {nominated[weight.index(decision[0])].name}.")
+                votedFor.append(nominated[weight.index(decision[0])])
             else:
                 choices = []
                 # Force voter to decide between one of the people with the highest vote-out priority
@@ -287,38 +290,69 @@ def elimination(originalNominated, originalVotingPool):
                 choices.sort(key=socScope)
                 votes[nominated.index(choices[0])] += 1
 
-                votedFor = nominated[nominated.index(choices[0])].name
+                votedFor.append(nominated[nominated.index(choices[0])])
 
-                print(f"{voter.name} decided to vote for {votedFor}. That's {votes[nominated.index(choices[0])]} votes {votedFor}.")
-            wait(.5)
+        # Tally the votes
+        print("I'll go tally the votes...")
+        wait(1)
 
         decision = votes.copy()
+        votesRemaining = votes.copy() # for dramatic vote reading
         decision.sort(reverse=True)
 
-        # Idol Plays (only doable before revote)
-        # Savior Play (can be played before votes are read - requires strategic scope)
-        for player in originalVotingPool:
-            if ("Savior" in player.idols and tie_count == 0):
-                # Player Criteria: must be themselves, allied, and must not idol out another ally or themselves
-                threatIndex = nominated.copy()
-                threatIndex.sort(reverse=True, key=notorietyScope) # wrong readings happen for savior plays since votes are unknown at this point
+        if tie_count == 0:
+            print("If anybody has a Hidden Immunity Idol and you want to play it, now would be the time to do so...")
+            wait(1)
 
-                biggestThreat = nominated[nominated.index(threatIndex[0])]
-                secondThreat = nominated[votes.index(decision[1])]
+            # Idol Plays (only doable before revote)
+            # Savior Play (can be played before votes are read - requires strategic scope)
+            for player in originalVotingPool:
+                if ("Savior" in player.idols):
+                    # Player Criteria: must be themselves, allied, and must not idol out another ally or themselves
+                    threatIndex = nominated.copy()
+                    threatIndex.sort(reverse=True, key=notorietyScope) # wrong readings happen for savior plays since votes are unknown at this point
 
-                if (biggestThreat not in safeViaIdol) and (biggestThreat == player or (player.faction != "Unaffiliated" and biggestThreat.faction == player.faction and secondThreat.faction != player.faction and secondThreat != player)):
-                    print(f"{Fore.GREEN}{player.name} plays their Savior for {biggestThreat.name}.{Style.RESET_ALL}")
-                    player.notoriety += 3
-                    # Add saved player to the list of the immune contestants to prevent them from being involved in rock draws
-                    safeViaIdol.append(biggestThreat)
+                    biggestThreat = nominated[nominated.index(threatIndex[0])]
+                    secondThreat = nominated[votes.index(decision[1])]
 
-                    nullifiedcount.append(f"{votes[nominated.index(biggestThreat)]}*")
-                    votes[nominated.index(biggestThreat)] = -2
+                    if (biggestThreat not in safeViaIdol) and (biggestThreat == player or (player.faction != "Unaffiliated" and biggestThreat.faction == player.faction and secondThreat.faction != player.faction and secondThreat != player)):
+                        print(f"{Fore.GREEN}{player.name} plays their Savior for {biggestThreat.name}.{Style.RESET_ALL}")
+                        player.notoriety += 3
+                        # Add saved player to the list of the immune contestants to prevent them from being involved in rock draws
+                        safeViaIdol.append(biggestThreat)
 
-                    # Remove the player's idol and reset the votes
-                    player.idols.remove("Savior")
-                    decision = votes.copy()
-                    decision.sort(reverse=True)
+                        nullifiedcount.append(f"{votes[nominated.index(biggestThreat)]}*")
+                        votes[nominated.index(biggestThreat)] = -2
+
+                        # Remove the player's idol and reset the votes
+                        player.idols.remove("Savior")
+                        decision = votes.copy()
+                        decision.sort(reverse=True)
+
+            print("Alright, once the votes are read, the decision is final. Person with the most votes will be asked to leave the General Meeting area immediately. I'll read the votes.")
+        print("First vote...")
+        wait(1)
+        # Dramatic vote reading
+        currentMax = 1
+        if safeViaIdol:
+            for player in safeViaIdol:
+                if player in nominated and votesRemaining[nominated.index(player)]:
+                    for x in range(votesRemaining[nominated.index(player)]):
+                        print(f"{player.name}. Does not count.")
+                        votesRemaining[nominated.index(player)] -= 1
+                        wait(1)
+        while (max(votesRemaining) > 0):
+            for x in range(len(votesRemaining)):
+                if votesRemaining[x]:
+                    print(f"{nominated[x].name}. That's {currentMax} vote{'' if currentMax == 1 else 's'} {nominated[x].name}.")
+                    votesRemaining[x] -= 1
+                    wait(1)
+            currentMax += 1
+            if sum(votesRemaining) == 1:
+                print("One vote left.")
+                wait(1)
+                break
+
 
         # Guardian Angel Play (can be played after votes are read but NOT after a tie, meaning allies have certainty of outcome)
         for player in originalVotingPool:
