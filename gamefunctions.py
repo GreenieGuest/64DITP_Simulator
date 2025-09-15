@@ -291,7 +291,6 @@ def elimination(originalNominated, originalVotingPool):
                 votes[nominated.index(choices[0])] += 1
 
                 votedFor.append(nominated[nominated.index(choices[0])])
-            wait(.5)
 
         # Tally the votes
         print("I'll go tally the votes...")
@@ -418,4 +417,5 @@ def elimination(originalNominated, originalVotingPool):
                         eliminated = random.choice(rockDrawers)
                 else:
                     eliminated = random.choice(rockDrawers)
+
     return eliminated, printVoteNotation(votecount, revotecount, nullifiedcount)
