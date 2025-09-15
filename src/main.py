@@ -475,27 +475,27 @@ proceed()
 if startingTeams > 3:
     for x in range(len(bootOrder)):
         if x < mergeThreshold:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
         elif x < secondSwapThreshold:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color3}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color3}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
         elif x < firstSwapThreshold:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
         else:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
 elif startingTeams == 3:
     for x in range(len(bootOrder)):
         if x < mergeThreshold:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
         elif x < firstSwapThreshold:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
         else:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
 else:
     for x in range(len(bootOrder)):
         if x < mergeThreshold:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
         else:
-            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(bootOrder[x])} - {voteNotations[castSize - x - 1]}")
 
 logBootOrder()
         
