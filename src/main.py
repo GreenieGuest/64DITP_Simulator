@@ -11,8 +11,8 @@ os.chdir(parent)
 
 from challenges import teamChallenge, challengeMerge
 from gamefunctions import gameEvents, schoolyardPick, elimination
-from utils import suffix, getShowdownPoints, proceed, wait
-from config import season_name, names, q1Names, q1Colors, q2Names, q2Colors, q3Names, q3Colors, mergeName, q4Colors, mergeColor, juryName, immunityName, firstSwapThreshold, secondSwapThreshold, mergeThreshold, finalThreshold, PRESET_PROFILES, PROFILE_FILE_PATH
+from utils import suffix, getShowdownPoints, proceed, wait, printTeamNotation
+from config import season_name, names, q1Names, q1Colors, q2Names, q2Colors, q3Names, q3Colors, mergeName, q4Colors, mergeColor, juryName, immunityName, firstSwapThreshold, secondSwapThreshold, mergeThreshold, finalThreshold, startingTeams, mergeatory, PRESET_PROFILES, PROFILE_FILE_PATH
 
 # If you know what you're doing, have fun tweaking below! ----------------------------------------------------------------------------------
 
@@ -50,20 +50,19 @@ def logBootOrder():
 
     print("Simulation boot order logged in simulations.txt")
 
+def printIdols():
+    print(f"{Fore.GREEN}[[ Idols ]]{Style.RESET_ALL}")
+    for player in players:
+        if len(player.idols):
+            for x in player.idols:
+                print(player.name + " - " + x)
+
 def printTeams(showTeams):
     for x in range(len(teams)):
         print(f"{teamColors[x]}[[{teamNames[x]}]]{Style.RESET_ALL}")
         for z in teams[x]:
             if showTeams == True:
-                match quarter:
-                    case 2:
-                        print(z.name + f" [{z.color1}*{Style.RESET_ALL}]")
-                    case 3:
-                        print(z.name + f" [{z.color1}*{z.color2}*{Style.RESET_ALL}]")
-                    case 4:
-                        print(z.name + f" [{z.color1}*{z.color2}*{z.color3}*{Style.RESET_ALL}]")
-                    case _:
-                        print(z.name)
+                print(z.name + printTeamNotation(z))
             else:
                 if z.faction == "Unaffiliated":
                     print(z.name + f" [{z.notoriety}]")
@@ -75,15 +74,7 @@ def printPlayersIn(Team, name, color, showTeams):
     print(f"{color}[[{name}]]{Style.RESET_ALL}")
     for x in Team:
         if showTeams == True:
-            match quarter:
-                case 2:
-                    print(x.name + f" [{x.color1}*{Style.RESET_ALL}]")
-                case 3:
-                    print(x.name + f" [{x.color1}*{x.color2}*{Style.RESET_ALL}]")
-                case 4:
-                    print(x.name + f" [{x.color1}*{x.color2}*{x.color3}*{Style.RESET_ALL}]")
-                case _:
-                    print(x.name)
+            print(x.name + printTeamNotation(x))
         else:
             if x.faction == "Unaffiliated":
                 print(x.name + f" [{x.notoriety}]")
@@ -97,6 +88,9 @@ def clearTeams():
     teams.clear()
 
 def mergeElimination(originalNominated, originalVotingPool):
+    printIdols()
+    wait(2)
+
     eliminated, votingNotation = elimination(originalNominated, originalVotingPool)
 
     print(f"{castSize + 1 - numPlayers}{suffix(castSize + 1 - numPlayers)} person voted out of {season_name}...")
@@ -128,6 +122,7 @@ def teamRound():
     wait(1)
 
     printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
+    printIdols()
     wait(2)
     eliminated, votingNotation = elimination(teams[losers], teams[losers])
 
@@ -140,19 +135,19 @@ def teamRound():
     
     proceed()
 
-def teamSwap(numTeams):
+def teamSwap(colorSlot):
     teamId = 0
     while len(notChosen) > 0:
         player = random.choice(notChosen)
         teams[teamId].append(player)
-        match numTeams:
-            case 3:
+        match colorSlot:
+            case 2:
                 player.color2 = teamColors[teamId]
             case 2:
                 player.color3 = teamColors[teamId]
         notChosen.remove(player)
         teamId += 1
-        if teamId > numTeams - 1:
+        if teamId > len(teams) - 1:
             teamId = 0
 
 def Eliminate(Player, team, voteNotation):
@@ -168,6 +163,7 @@ def Eliminate(Player, team, voteNotation):
     numPlayers -= 1
     bootOrder.insert(0, Player)
     team.remove(Player)
+    players.remove(Player)
     voteNotations.append(voteNotation)
 
 
@@ -197,8 +193,8 @@ if PRESET_PROFILES == True:
     except Exception as e:
         print(f"Error: {e}")
 
-castSize = len(names)
-numPlayers = len(names)
+castSize = len(players)
+numPlayers = len(players)
 jury = []
 bootOrder = []
 voteNotations = []
@@ -210,100 +206,161 @@ proceed()
 
 notChosen = players.copy()
 
-teams = [[],[],[],[]]
-teamNames = q1Names
-teamColors = q1Colors
-
 print(f"{season_name}")
-schoolyardPick(notChosen, teams, teamColors)
 
-printTeams(True)
-print(f"{Fore.GREEN}[[FIRST QUARTER - FOUR-TEAM PHASE]]{Style.RESET_ALL}")
-proceed()
+if (startingTeams > 4):
 
-while numPlayers > firstSwapThreshold and getSmallestTeamSize() > 1:
-    teamRound()
-printTeams(True)
-print(f"{Fore.GREEN}[[SECOND QUARTER - THREE-TEAM PHASE]]{Style.RESET_ALL}")
-quarter += 1
-proceed()
-# First Quarter End
-clearTeams()
+    teams = [[],[],[],[]]
+    teamNames = q1Names
+    teamColors = q1Colors
 
-teams = [[],[],[]]
-teamNames = q2Names
-teamColors = q2Colors
-teamSwap(3)
+    schoolyardPick(notChosen, teams, teamColors)
+    
+    printTeams(True)
+    print(f"{Fore.GREEN}[[FIRST QUARTER - FOUR-TEAM PHASE]]{Style.RESET_ALL}")
+    proceed()
 
-printTeams(True)
-print("The teams have been swapped randomly. The Second Quarter begins.")
-proceed()
-
-while numPlayers > secondSwapThreshold and getSmallestTeamSize() > 1:
-    teamRound()
-printTeams(True)
-print(f"{Fore.GREEN}[[THIRD QUARTER - TWO-TEAM PHASE]]{Style.RESET_ALL}")
-quarter += 1
-proceed()
-
-# Second Quarter End
-clearTeams()
-
-teams = [[],[]]
-teamNames = q3Names
-teamColors = q3Colors
-teamSwap(2)
-
-printTeams(True)
-print("The halfway point of players has been reached. The teams have been swapped again. The Third Quarter begins.")
-proceed()
-
-while numPlayers > mergeThreshold and getSmallestTeamSize() > 1:
-    teamRound()
-printTeams(False)
-proceed()
-# Third Quarter End
-quarter += 1
-print("The teams have officially merged. For the first half of the merge, the first half of competitors who win the challenge win immunity.")
-clearTeams()
-printPlayersIn(notChosen, mergeName, mergeColor, True)
-print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (HAVE-GOTS vs. HAVE-NOTS)]]{Style.RESET_ALL}")
-proceed()
-
-while numPlayers > finalThreshold:
-    print(f"[- Day {castSize + 1 - numPlayers} -]\n")
-
-    gameEvents(notChosen, quarter)
-
-    teams = [[],[]]
-    teamNames = ["Immune","Lost the Challenge"]
-    teamColors = q4Colors
-    teamId = 0
-
-    challengeResults = challengeMerge(False, 0, challenges, notChosen)
-    threshold = math.ceil(numPlayers / 2)
-    dangerzone = notChosen.copy()
-
-    for x in range(threshold): # In first half of merge, number of immune contestants is always favored in odd rounds
-        player = notChosen[challengeResults[x]] # Challenge results returns the indexes in order from best challenge performance to worst
-        player.notoriety += 1
-
-        teams[0].append(player) 
-        dangerzone.remove(player)
-    # Dump the losers in the loser team
-    teams[1] = dangerzone.copy()
-    del dangerzone
-    notChosen.clear()
-
-    gameEvents(teams[0] + teams[1], quarter)
-    wait(2)
-    printTeams(False)
-
-    mergeElimination(teams[1], teams[0]+teams[1])
+    while numPlayers > firstSwapThreshold and getSmallestTeamSize() > 1:
+        teamRound()
+    printTeams(True)
+    print(f"{Fore.GREEN}[[SECOND QUARTER - THREE-TEAM PHASE]]{Style.RESET_ALL}")
+    quarter += 1
+    proceed()
+    # First Quarter End
     clearTeams()
 
+    teams = [[],[],[]]
+    teamNames = q2Names
+    teamColors = q2Colors
+    teamSwap(2)
+
+    printTeams(True)
+    print("The teams have been swapped randomly. The Second Quarter begins.")
     proceed()
-print("The Have-Gots vs. Have-Nots phase is over. Individual immunity is now in effect.")
+
+    while numPlayers > secondSwapThreshold and getSmallestTeamSize() > 1:
+        teamRound()
+    printTeams(True)
+    print(f"{Fore.GREEN}[[THIRD QUARTER - TWO-TEAM PHASE]]{Style.RESET_ALL}")
+    quarter += 1
+    proceed()
+
+    # Second Quarter End
+    clearTeams()
+
+    teams = [[],[]]
+    teamNames = q3Names
+    teamColors = q3Colors
+    teamSwap(3)
+
+    printTeams(True)
+    print("The halfway point of players has been reached. The teams have been swapped again. The Third Quarter begins.")
+    proceed()
+
+    while numPlayers > mergeThreshold and getSmallestTeamSize() > 1:
+        teamRound()
+    printTeams(False)
+    proceed()
+    # Third Quarter End
+    quarter += 1
+elif (startingTeams == 3):
+    teams = [[],[],[]]
+    teamNames = q2Names
+    teamColors = q2Colors
+
+    schoolyardPick(notChosen, teams, teamColors)
+    
+    printTeams(True)
+    print(f"{Fore.GREEN}[[THREE-TEAM PHASE]]{Style.RESET_ALL}")
+    proceed()
+
+    while numPlayers > firstSwapThreshold and getSmallestTeamSize() > 1:
+        teamRound()
+    printTeams(True)
+    print(f"{Fore.GREEN}[[TWO-TEAM PHASE]]{Style.RESET_ALL}")
+    quarter += 2
+    proceed()
+    # First Quarter End
+    clearTeams()
+
+    teams = [[],[]]
+    teamNames = q3Names
+    teamColors = q3Colors
+    teamSwap(2)
+
+    printTeams(True)
+    print("The teams have been swapped randomly. The Second Quarter begins.")
+    proceed()
+
+    while numPlayers > mergeThreshold and getSmallestTeamSize() > 1:
+        teamRound()
+    printTeams(True)
+    print(f"{Fore.GREEN}[[THIRD QUARTER - TWO-TEAM PHASE]]{Style.RESET_ALL}")
+    proceed()
+    # Third Quarter End
+    quarter += 1
+elif (startingTeams < 3):
+    teams = [[],[]]
+    teamNames = q3Names
+    teamColors = q3Colors
+
+    schoolyardPick(notChosen, teams, teamColors)
+    
+    printTeams(True)
+    print(f"{Fore.GREEN}[[TWO-TEAM PHASE]]{Style.RESET_ALL}")
+    proceed()
+
+    while numPlayers > mergeThreshold and getSmallestTeamSize() > 1:
+        teamRound()
+    printTeams(True)
+    proceed()
+    # Third Quarter End
+    quarter += 3
+
+if mergeatory:
+    print("The teams have officially merged. For the first half of the merge, the first half of competitors who win the challenge win immunity.")
+    clearTeams()
+    printPlayersIn(notChosen, mergeName, mergeColor, True)
+    print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (HAVE-GOTS vs. HAVE-NOTS)]]{Style.RESET_ALL}")
+    proceed()
+
+    while numPlayers > finalThreshold:
+        print(f"[- Day {castSize + 1 - numPlayers} -]\n")
+
+        gameEvents(notChosen, quarter)
+
+        teams = [[],[]]
+        teamNames = ["Immune","Lost the Challenge"]
+        teamColors = q4Colors
+        teamId = 0
+
+        challengeResults = challengeMerge(False, 0, challenges, notChosen)
+        threshold = math.ceil(numPlayers / 2)
+        dangerzone = notChosen.copy()
+
+        for x in range(threshold): # In first half of merge, number of immune contestants is always favored in odd rounds
+            player = notChosen[challengeResults[x]] # Challenge results returns the indexes in order from best challenge performance to worst
+            player.notoriety += 1
+
+            teams[0].append(player) 
+            dangerzone.remove(player)
+        # Dump the losers in the loser team
+        teams[1] = dangerzone.copy()
+        del dangerzone
+        notChosen.clear()
+
+        gameEvents(teams[0] + teams[1], quarter)
+        wait(2)
+        printTeams(False)
+
+        mergeElimination(teams[1], teams[0]+teams[1])
+        clearTeams()
+
+        proceed()
+    print("The Have-Gots vs. Have-Nots phase is over. Individual immunity is now in effect.")
+else:
+    print("The teams have officially merged. Individual immunity is now in effect.")
+    clearTeams()
 printPlayersIn(notChosen, mergeName, mergeColor, True)
 print(f"{Fore.GREEN}[[FOURTH QUARTER - MERGE (INDIVIDUAL IMMUNITY)]]{Style.RESET_ALL}")
 proceed()
@@ -337,7 +394,7 @@ proceed()
 
 # Ultimate Showdown
 
-for x in range(61):
+for x in range(len(challenges)):
     challengeResults = challengeMerge(True, x, challenges, notChosen)
     challengeWinner = notChosen[challengeResults[0]]
     challengeWinner.showdownPoints += 1
@@ -415,15 +472,30 @@ Eliminate(runnerUp, notChosen, f"{runnerUp.juryVotes}-{winner.juryVotes}")
 Eliminate(winner, notChosen, f"{winner.juryVotes}-{runnerUp.juryVotes}") # even winners must die the same death
 
 proceed()
-for x in range(len(bootOrder)):
-    if x < mergeThreshold:
-        print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f" [{bootOrder[x].color1}*{bootOrder[x].color2}*{bootOrder[x].color3}*{Style.RESET_ALL}] - {voteNotations[castSize - x - 1]}")
-    elif x < secondSwapThreshold:
-        print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color3}{bootOrder[x].name}{Style.RESET_ALL}" + f" [{bootOrder[x].color1}*{bootOrder[x].color2}*{Style.RESET_ALL}] - {voteNotations[castSize - x - 1]}")
-    elif x < firstSwapThreshold:
-        print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f" [{bootOrder[x].color1}*{Style.RESET_ALL}] - {voteNotations[castSize - x - 1]}")
-    else:
-        print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL} - {voteNotations[castSize - x - 1]}")
+if startingTeams > 3:
+    for x in range(len(bootOrder)):
+        if x < mergeThreshold:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+        elif x < secondSwapThreshold:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color3}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+        elif x < firstSwapThreshold:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+        else:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+elif startingTeams == 3:
+    for x in range(len(bootOrder)):
+        if x < mergeThreshold:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+        elif x < firstSwapThreshold:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color2}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+        else:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+else:
+    for x in range(len(bootOrder)):
+        if x < mergeThreshold:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].name}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
+        else:
+            print(f"{x+1}{suffix(x+1)}: {bootOrder[x].color1}{bootOrder[x].name}{Style.RESET_ALL}" + f"{printTeamNotation(x)} - {voteNotations[castSize - x - 1]}")
 
 logBootOrder()
         

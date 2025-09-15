@@ -1,6 +1,7 @@
 import random
 from time import sleep
 from config import FASTFORWARD
+from colorama import Fore, Style
 
 import os
 from pathlib import Path
@@ -136,3 +137,13 @@ def printVoteNotation(votecount, revotecount, nullifiedcount):
                 notation += f"-{num}"
     
     return notation
+
+def printTeamNotation(Player):
+    if Player.color3:
+        return f" [{Player.color1}*{Player.color2}*{Player.color3}*{Style.RESET_ALL}]"
+    elif Player.color2:
+        return f" [{Player.color1}*{Player.color2}*{Style.RESET_ALL}]"
+    elif Player.color1:
+        return f" [{Player.color1}*{Style.RESET_ALL}]"
+    else:
+        return ""

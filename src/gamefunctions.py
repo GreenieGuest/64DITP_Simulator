@@ -122,7 +122,7 @@ def gameEvents(team, quarter):
 
                 case "manageNotoriety":
                     dynamics = socScope(playerA)
-                    if dynamics > 3 and playerA.notoriety > 50:
+                    if dynamics > 3 and playerA.notoriety > 10:
                         playerA.notoriety -= (dynamics - 2)
                         print(f"{playerA.name} lowers their threat level at camp.")
                     elif dynamics == 1:
@@ -147,36 +147,60 @@ def gameEvents(team, quarter):
                             if teammate.faction == playerA.faction:
                                 threatRanking.remove(teammate)
                         if quarter == 1:
-                            threatRanking.sort(key=allScope)
+                            threatBasis = random.randint(1, 6)
+                            match threatBasis:
+                                case 1:
+                                    threatRanking.sort(key=physScope, reverse=True)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for poor challenge performance.")
+                                case 2:
+                                    threatRanking.sort(key=stratScope, reverse=True)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being untrustworthy.")
+                                case 3:
+                                    threatRanking.sort(key=socScope, reverse=True)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a social outcast.")
+                                case _:
+                                    threatRanking.sort(key=allScope, reverse=True)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} to strengthen the team.")
 
                             playerA.faction.target = threatRanking[0]
-                            print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {playerA.faction.target.name} to strengthen the team.")
                         else:
-                            threatRanking.sort(key=allScope)
+                            threatBasis = random.randint(1, 6)
+                            match threatBasis:
+                                case 1:
+                                    threatRanking.sort(key=physScope)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a challenge threat.")
+                                case 2:
+                                    threatRanking.sort(key=stratScope)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a strategic threat.")
+                                case 3:
+                                    threatRanking.sort(key=socScope)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being a social threat.")
+                                case _:
+                                    threatRanking.sort(key=allScope)
+                                    print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {threatRanking[0].name} for being an overall threat.")
 
                             playerA.faction.target = threatRanking[0]
-                            print(f"{playerA.name} convinces {playerA.faction.name} to start targetting {playerA.faction.target.name} for being a threat.")
 
     print(" ")
 
 def schoolyardPick(playerPool, teams, teamColors):
-    teamCaptains = [None, None, None, None] # Purely cosmetic
-    captainPreference = [None, None, None, None]
+    teamCaptains = [None] * len(teams)
+    captainPreference = [None] * len(teams)
 
     print(f"{Fore.GREEN}[[DAY ONE SCHOOLYARD PICK]]{Style.RESET_ALL}")
     teamId = 0
 
-    for x in range(4):
+    for x in range(len(teams)):
         teamCaptain = random.choice(playerPool)
         teams[teamId].append(teamCaptain)
         teamCaptain.color1 = teamColors[teamId]
         teamCaptains[teamId] = teamCaptain
         playerPool.remove(teamCaptain)
         teamId += 1
-        if teamId > 3:
+        if teamId > len(teams) - 1:
             teamId = 0
 
-    print(f"The team captains are randomly selected as {teamCaptains[0].name}, {teamCaptains[1].name}, {teamCaptains[2].name}, and {teamCaptains[3].name}.")
+    print(f"The team captains are randomly selected as {', '.join(o.name for o in teamCaptains)}.")
     for x in range(len(captainPreference)):
         preference = random.randint(1, 6)
         match preference:
@@ -213,7 +237,7 @@ def schoolyardPick(playerPool, teams, teamColors):
         player.color1 = teamColors[teamId]
         playerPool.remove(player)
         teamId += 1
-        if teamId > 3:
+        if teamId > len(teams) - 1:
             teamId = 0
         wait(.5)
 
