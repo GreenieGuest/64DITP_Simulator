@@ -1,6 +1,6 @@
 import random
 from time import sleep
-from config import FASTFORWARD
+from config import FASTFORWARD, AUTORUN
 from colorama import Fore, Style
 
 import os
@@ -23,6 +23,12 @@ def getShowdownPoints(player):
     Get a stat.
     """
     return player.showdownPoints
+
+def getAveragePlacement(player):
+    """
+    Get a stat.
+    """
+    return sum(player.data) / len(player.data)
 
 def physScope(player):
     """
@@ -73,8 +79,9 @@ def rollPass(stat):
         return False
 
 def proceed():
-    proceed = input("Press enter to proceed.")
-    print(" ")
+    if not AUTORUN:
+        proceed = input("Press enter to proceed.")
+        print(" ")
 
 def wait(time): # Lua relic
     if FASTFORWARD == False:
@@ -147,3 +154,9 @@ def printTeamNotation(Player):
         return f" [{Player.color1}*{Style.RESET_ALL}]"
     else:
         return ""
+
+def findPlayerWithName(players, name):
+    for x in players:
+        if x.name == name:
+            return x
+    return None

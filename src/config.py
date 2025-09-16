@@ -1,5 +1,4 @@
-from colorama import Fore, Style
-from time import sleep
+from colorama import Fore
 
 # [[ CONFIGURATION ]] ----------------------------------------------------------------------------------
 season_name = "64 Days in the Pit - The Ultimate Showdown"
@@ -28,11 +27,14 @@ secondSwapThreshold = 32 # Default: 32 out of 64
 mergeThreshold = 16 # Default: 16 out of 64
 finalThreshold = 8 # Default: 8 out of 64
 
-startingTeams = 3 # Default: 4 // If you're adding more than 4, you're gonna have to make new names and colors for them
-mergeatory = False # Default: True
+startingTeams = 4 # Default: 4 // If you're adding more than 4, you're gonna have to make new names and colors for them
+mergeatory = True # Default: True
+
+# Auto-Runner
+simulationsToRun = 100
+AUTORUN = False
 
 FASTFORWARD = False
 
 PRESET_PROFILES = True
-
 PROFILE_FILE_PATH = 'profiles.json'
