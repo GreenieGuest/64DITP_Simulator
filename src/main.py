@@ -11,8 +11,8 @@ os.chdir(parent)
 
 from challenges import teamChallenge, challengeMerge
 from gamefunctions import gameEvents, schoolyardPick, elimination
-from utils import suffix, getShowdownPoints, getAveragePlacement, proceed, wait, printTeamNotation, findPlayerWithName
-from config import season_name, names, q1Names, q1Colors, q2Names, q2Colors, q3Names, q3Colors, mergeName, q4Colors, mergeColor, juryName, immunityName, firstSwapThreshold, secondSwapThreshold, mergeThreshold, finalThreshold, startingTeams, mergeatory, simulationsToRun, PRESET_PROFILES, AUTORUN, PROFILE_FILE_PATH
+from utils import suffix, getShowdownPoints, getAveragePlacement, proceed, wait, printTeamNotation, findPlayerWithName, getStatRate, socScope
+from config import season_name, names, q1Names, q1Colors, q2Names, q2Colors, q3Names, q3Colors, mergeName, q4Colors, mergeColor, juryName, immunityName, firstSwapThreshold, secondSwapThreshold, mergeThreshold, finalThreshold, startingTeams, mergeatory, simulationsToRun, PRESET_PROFILES, PRESET_TEAMS, AUTORUN, PROFILE_FILE_PATH
 
 # If you know what you're doing, have fun tweaking below! ----------------------------------------------------------------------------------
 
@@ -29,12 +29,17 @@ class PlayerData:
         # Strictly for win/placement statistics
         self.name = name
         self.data = []
+
         self.winCount = 0
+        self.finaleCount = 0
+        self.mergeCount = 0
+        self.quarter3Count = 0
+        self.quarter2Count = 0
 
 # [[ SIM FUNCTIONS ]] ----------------------------------------------------------------------------------
 
 class Player:
-    def __init__(self, name, physStat, stratStat, socStat, notoriety, faction):
+    def __init__(self, name, physStat, stratStat, socStat, notoriety, faction, startingTeam):
         self.name = name
         # Game Points
         self.showdownPoints = 0
@@ -54,16 +59,41 @@ class Player:
         self.notoriety = notoriety
         self.faction = faction
 
+        # Other
+        self.startingTeam = startingTeam
+        self.relationships = None
+
 def decode(obj):
-    return Player(obj['name'], obj['physStat'], obj['stratStat'], obj['socStat'], obj['notoriety'], obj['faction'])
+    return Player(obj['name'], obj['physStat'], obj['stratStat'], obj['socStat'], obj['notoriety'], obj['faction'], obj['startingTeam'])
 
 def logBootOrder():
-    with open("simulations.txt", "w") as log:
+    with open("simulations.txt", "a") as log:
         for x in range(len(bootOrder)):
             log.write(f"{bootOrder[x].name}\n") # {x+1}{suffix(x+1)}: 
         log.write("\n")
 
     print("Simulation boot order logged in simulations.txt")
+
+def logPlayerStats():
+    with open("statistics.txt", "w") as log:
+        for x in winners:
+            log.write(f"{x}\n")
+
+        playerData.sort(key=getAveragePlacement)
+        for i, x in enumerate(playerData):
+            log.write(f"\n[[{i + 1}. {x.name}]]\n")
+            log.write(f"win count: {x.winCount}\n")
+            log.write(f"win percentage: {getStatRate(x.winCount, len(x.data))}\n")
+            log.write(f"finale rate: {getStatRate(x.finaleCount, len(x.data))}\n")
+            log.write(f"merge rate: {getStatRate(x.mergeCount, len(x.data))}\n")
+            log.write(f"quarter 3 rate: {getStatRate(x.quarter3Count, len(x.data))}\n")
+            log.write(f"quarter 2 rate: {getStatRate(x.quarter2Count, len(x.data))}\n")
+            log.write(f"best placement: {min(x.data)}\n")
+            log.write(f"worst placement: {max(x.data)}\n")
+            log.write(f"average placement: {sum(x.data)/len(x.data)}\n")
+        log.write("\n")
+
+    print("Simulation boot order logged in statistics.txt")
 
 def printIdols():
     print(f"{Fore.GREEN}[[Idols]]{Style.RESET_ALL}")
@@ -107,7 +137,7 @@ def mergeElimination(originalNominated, originalVotingPool):
     printIdols()
     wait(2)
 
-    eliminated, votingNotation = elimination(originalNominated, originalVotingPool)
+    eliminated, votingNotation = elimination(originalNominated, originalVotingPool, numPlayers)
 
     print(f"{castSize + 1 - numPlayers}{suffix(castSize + 1 - numPlayers)} person voted out of {season_name}...")
     wait(3)
@@ -140,7 +170,7 @@ def teamRound():
     printPlayersIn(teams[losers], teamNames[losers], teamColors[losers], False)
     printIdols()
     wait(2)
-    eliminated, votingNotation = elimination(teams[losers], teams[losers])
+    eliminated, votingNotation = elimination(teams[losers], teams[losers], numPlayers)
 
     print(f"{castSize + 1 - numPlayers}{suffix(castSize + 1 - numPlayers)} person voted out of {season_name}...")
     wait(3)
@@ -159,7 +189,7 @@ def teamSwap(colorSlot):
         match colorSlot:
             case 2:
                 player.color2 = teamColors[teamId]
-            case 2:
+            case 3:
                 player.color3 = teamColors[teamId]
         notChosen.remove(player)
         teamId += 1
@@ -191,7 +221,7 @@ def Eliminate(Player, team, voteNotation):
 
 while (simulationRunning):
         
-    players = [Player(item, random.randint(1, 6), random.randint(1, 6), random.randint(1, 6), 0, "Unaffiliated") for item in names]
+    players = [Player(item, random.randint(1, 6), random.randint(1, 6), random.randint(1, 6), 0, "Unaffiliated", None) for item in names]
 
     if PRESET_PROFILES == True:
         try:
@@ -229,8 +259,22 @@ while (simulationRunning):
         teams = [[],[],[],[]]
         teamNames = q1Names
         teamColors = q1Colors
-
-        schoolyardPick(notChosen, teams, teamColors)
+        
+        if PRESET_TEAMS and PRESET_PROFILES: # If players are pre-assigned teams, disperse them
+            teamId = 0
+            for player in notChosen:
+                if player.startingTeam in teamNames: # If the pre-defined team is invalid or they don't have one, randomly disperse
+                    teams[teamNames.index(player.startingTeam)].append(player)
+                    player.color1 = teamColors[teamNames.index(player.startingTeam)]
+                else:
+                    teams[teamId].append(player)
+                    player.color1 = teamColors[teamId]
+                teamId += 1
+                if teamId > len(teams) - 1:
+                    teamId = 0
+            notChosen.clear()
+        else:
+            schoolyardPick(notChosen, teams, teamColors)
         
         printTeams(True)
         print(f"{Fore.GREEN}[[FIRST QUARTER - FOUR-TEAM PHASE]]{Style.RESET_ALL}")
@@ -284,7 +328,21 @@ while (simulationRunning):
         teamNames = q2Names
         teamColors = q2Colors
 
-        schoolyardPick(notChosen, teams, teamColors)
+        if PRESET_TEAMS and PRESET_PROFILES: # If players are pre-assigned teams, disperse them
+            teamId = 0
+            for player in notChosen:
+                if player.startingTeam in teamNames: # If the pre-defined team is invalid or they don't have one, randomly disperse
+                    teams[teamNames.index(player.startingTeam)].append(player)
+                    player.color1 = teamColors[teamNames.index(player.startingTeam)]
+                else:
+                    teams[teamId].append(player)
+                    player.color1 = teamColors[teamId]
+                teamId += 1
+                if teamId > len(teams) - 1:
+                    teamId = 0
+            notChosen.clear()
+        else:
+            schoolyardPick(notChosen, teams, teamColors)
         
         printTeams(True)
         print(f"{Fore.GREEN}[[THREE-TEAM PHASE]]{Style.RESET_ALL}")
@@ -320,7 +378,21 @@ while (simulationRunning):
         teamNames = q3Names
         teamColors = q3Colors
 
-        schoolyardPick(notChosen, teams, teamColors)
+        if PRESET_TEAMS and PRESET_PROFILES: # If players are pre-assigned teams, disperse them
+            teamId = 0
+            for player in notChosen:
+                if player.startingTeam in teamNames: # If the pre-defined team is invalid or they don't have one, randomly disperse
+                    teams[teamNames.index(player.startingTeam)].append(player)
+                    player.color1 = teamColors[teamNames.index(player.startingTeam)]
+                else:
+                    teams[teamId].append(player)
+                    player.color1 = teamColors[teamId]
+                teamId += 1
+                if teamId > len(teams) - 1:
+                    teamId = 0
+            notChosen.clear()
+        else:
+            schoolyardPick(notChosen, teams, teamColors)
         
         printTeams(True)
         print(f"{Fore.GREEN}[[TWO-TEAM PHASE]]{Style.RESET_ALL}")
@@ -439,6 +511,12 @@ while (simulationRunning):
     printPlayersIn(notChosen, mergeName, mergeColor, True)
     print(f"[- Day {castSize} -]\n")
     print("The members of the jury, who all were eliminated after the merge, will now decide the winner.")
+    # Players use their social charm to sway the jury
+    
+    print(f"{notChosen[0].name}'s threat level throughout the game is {notChosen[0].notoriety}, whereas {notChosen[1].name}'s is {notChosen[1].notoriety}.")
+    notChosen[0].notoriety += (int(notChosen[0].notoriety / 5) * (socScope(notChosen[0]) - 1)) # Basically, these two functions make it so that players can up to double their notoriety through talking it up
+    notChosen[1].notoriety += (int(notChosen[1].notoriety / 5) * (socScope(notChosen[1]) - 1))
+    print(f"In their last jury speech they were able to raise it to {notChosen[0].notoriety} and {notChosen[1].notoriety} respectively.")
     print(f"{Fore.GREEN}[[FINAL TWO - JURY VOTE]]{Style.RESET_ALL}")
     proceed()
 
@@ -518,16 +596,21 @@ while (simulationRunning):
         existingData = findPlayerWithName(playerData, x.name)
         if existingData:
             existingData.data.append(i+1)
-            if i == 0:
-                existingData.winCount += 1
-                winners.append(x.name)
         else:
-            newData = PlayerData(x.name)
-            newData.data.append(i+1)
-            if i == 0:
-                newData.winCount += 1
-                winners.append(x.name)
-            playerData.append(newData)
+            existingData = PlayerData(x.name)
+            existingData.data.append(i+1)
+            playerData.append(existingData)
+        if i < firstSwapThreshold:
+            existingData.quarter2Count += 1
+        if i < secondSwapThreshold:
+            existingData.quarter3Count += 1
+        if i < mergeThreshold:
+            existingData.mergeCount += 1
+        if i < 3:
+            existingData.finaleCount += 1
+        if i == 0:
+            existingData.winCount += 1
+            winners.append(x.name)
             
     simulationsRan += 1
     simsLeft -= 1
@@ -550,3 +633,5 @@ for i, x in enumerate(playerData):
     print(f"best placement: {min(x.data)}")
     print(f"worst placement: {max(x.data)}")
     print(f"average placement: {sum(x.data)/len(x.data)}")
+
+logPlayerStats()

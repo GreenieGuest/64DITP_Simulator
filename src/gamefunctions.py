@@ -122,7 +122,7 @@ def gameEvents(team, quarter):
 
                 case "manageNotoriety":
                     dynamics = socScope(playerA)
-                    if dynamics > 3 and playerA.notoriety > 10:
+                    if dynamics > 3 and playerA.notoriety > 15:
                         playerA.notoriety -= (dynamics - 2)
                         print(f"{playerA.name} lowers their threat level at camp.")
                     elif dynamics == 1:
@@ -241,7 +241,7 @@ def schoolyardPick(playerPool, teams, teamColors):
             teamId = 0
         wait(.5)
 
-def elimination(originalNominated, originalVotingPool):
+def elimination(originalNominated, originalVotingPool, playersRemaining):
     # Each player in votingPool will vote for one player in nominated
     # Their decision is mostly based on notoriety but can be affected by factors such as alliance and social
     tie_count = 0
@@ -300,8 +300,11 @@ def elimination(originalNominated, originalVotingPool):
         votesRemaining = votes.copy() # for dramatic vote reading
         decision.sort(reverse=True)
 
-        if tie_count == 0:
-            print("If anybody has a Hidden Immunity Idol and you want to play it, now would be the time to do so...")
+        if tie_count == 0 and playersRemaining > 4:
+            if playersRemaining == 5:
+                print("If anybody has a Hidden Immunity Idol, this is your last opportunity to do so...")
+            elif playersRemaining > 5:
+                print("If anybody has a Hidden Immunity Idol and you want to play it, now would be the time to do so...")
             wait(1)
 
             # Idol Plays (only doable before revote)
@@ -354,25 +357,26 @@ def elimination(originalNominated, originalVotingPool):
                 break
 
 
-        # Guardian Angel Play (can be played after votes are read but NOT after a tie, meaning allies have certainty of outcome)
-        for player in originalVotingPool:
-            if ("Guardian Angel" in player.idols and tie_count == 0):
-                # Player Criteria: must be themselves, allied, and must not idol out another ally or themselves
-                inDanger = nominated[votes.index(decision[0])]
-                nextInDanger = nominated[votes.index(decision[1])]
+        if (tie_count == 0 and playersRemaining > 4):
+            # Guardian Angel Play (can be played after votes are read but NOT after a tie, meaning allies have certainty of outcome)
+            for player in originalVotingPool:
+                if ("Guardian Angel" in player.idols):
+                    # Player Criteria: must be themselves, allied, and must not idol out another ally or themselves
+                    inDanger = nominated[votes.index(decision[0])]
+                    nextInDanger = nominated[votes.index(decision[1])]
 
-                if (inDanger not in safeViaIdol) and (inDanger == player or (player.faction != "Unaffiliated" and inDanger.faction == player.faction and nextInDanger.faction != player.faction and nextInDanger != player)):
-                    print(f"{Fore.GREEN}{player.name} plays their Guardian Angel for {inDanger.name}.{Style.RESET_ALL}")
-                    player.notoriety += 5
-                    # Add saved player to the list of the immune contestants to prevent them from being involved in rock draws
-                    safeViaIdol.append(inDanger)
-                    nullifiedcount.append(f"{decision[0]}*")
-                    votes[nominated.index(inDanger)] = -2
+                    if (inDanger not in safeViaIdol) and (inDanger == player or (player.faction != "Unaffiliated" and inDanger.faction == player.faction and nextInDanger.faction != player.faction and nextInDanger != player)):
+                        print(f"{Fore.GREEN}{player.name} plays their Guardian Angel for {inDanger.name}.{Style.RESET_ALL}")
+                        player.notoriety += 5
+                        # Add saved player to the list of the immune contestants to prevent them from being involved in rock draws
+                        safeViaIdol.append(inDanger)
+                        nullifiedcount.append(f"{decision[0]}*")
+                        votes[nominated.index(inDanger)] = -2
 
-                    # Remove the player's idol and reset the votes
-                    player.idols.remove("Guardian Angel")
-                    decision = votes.copy()
-                    decision.sort(reverse=True)
+                        # Remove the player's idol and reset the votes
+                        player.idols.remove("Guardian Angel")
+                        decision = votes.copy()
+                        decision.sort(reverse=True)
 
         n = next((i for i, x in enumerate(decision) if x != decision[0]), len(decision)) # see how many people r tied
         # If the votes don't tie, continue as normal
@@ -389,13 +393,21 @@ def elimination(originalNominated, originalVotingPool):
             nominatedCopy = nominated.copy()
             nominated.clear()
             if tie_count == 1:
+
                 votecount = decision.copy()
-                print(f"{Fore.RED}The votes tied. We will have a re-vote: the tied players will not be able to vote, but the remaining voters will only be allowed to vote for one of the tied players.{Style.RESET_ALL}")
                 for i in range(n):
                     tietiedPerson = nominatedCopy[votes.index(decision[i])]
                     nominated.append(tietiedPerson)
                     votingPool.remove(tietiedPerson)
                     votes[votes.index(decision[i])] = -1
+                    
+                if playersRemaining == 4:
+                    print(f"{Fore.RED}The votes tied. We will now go to the fire-making challenge. The first player to make their fire will remain in the game.{Style.RESET_ALL}")
+                    eliminated = finalFourFireMaking(nominated[0], nominated[1])
+                    break
+                else:
+                    print(f"{Fore.RED}The votes tied. We will have a re-vote: the tied players will not be able to vote, but the remaining voters will only be allowed to vote for one of the tied players.{Style.RESET_ALL}")
+
             else: # Since votes tied twice, players go to rocks - players immune but in the voting pool are spared, along with tied players
                 revotecount = decision.copy()
                 print(f"{Fore.RED}The votes are deadlocked. We will now go to rocks - whoever draws the white rock is eliminated.{Style.RESET_ALL}")
@@ -418,3 +430,27 @@ def elimination(originalNominated, originalVotingPool):
                 else:
                     eliminated = random.choice(rockDrawers)
     return eliminated, printVoteNotation(votecount, revotecount, nullifiedcount)
+
+def finalFourFireMaking(player1, player2): # The ultimate test.
+    player1Fire = 0
+    player2Fire = 0
+    while (player1Fire < 100 and player2Fire < 100) or player1Fire == player2Fire:
+        player1Fire += physScope(player1)
+        player2Fire += physScope(player2)
+        player1Fire += stratScope(player1)
+        player2Fire += stratScope(player2)
+        player1Fire += socScope(player1)
+        player2Fire += socScope(player2)
+        wait(0.5)
+        print(f"{player1.name}: {player1Fire} || {player2Fire} :{player2.name}")
+
+    if player1Fire > player2Fire:
+        eliminatedPlayer = player2
+        print(f"{Fore.RED}{player1.name} won the Final 4 Firemaking Challenge.{Style.RESET_ALL}")
+        player1.notoriety += 3
+    else:
+        eliminatedPlayer = player1
+        print(f"{Fore.RED}{player2.name} won the Final 4 Firemaking Challenge.{Style.RESET_ALL}")
+        player2.notoriety += 3
+
+    return eliminatedPlayer

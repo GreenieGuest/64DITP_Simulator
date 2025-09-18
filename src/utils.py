@@ -30,6 +30,12 @@ def getAveragePlacement(player):
     """
     return sum(player.data) / len(player.data)
 
+def getStatRate(statCount, totalRounds):
+    """
+    Get a stat.
+    """
+    return f"{round(statCount / totalRounds * 100, 3)}%"
+
 def physScope(player):
     """
     Get a stat.

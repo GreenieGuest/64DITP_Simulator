@@ -5,7 +5,8 @@
     "stratStat": 5,
     "socStat": 6,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Boat Crew",
@@ -13,7 +14,8 @@
     "stratStat": 6,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Stunt Devil",
@@ -21,7 +23,8 @@
     "stratStat": 3,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Muscles",
@@ -29,7 +32,8 @@
     "stratStat": 2,
     "socStat": 5,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Ellie Lander",
@@ -37,7 +41,8 @@
     "stratStat": 3,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Polandball",
@@ -45,7 +50,8 @@
     "stratStat": 2,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Gamer",
@@ -53,7 +59,8 @@
     "stratStat": 3,
     "socStat": 5,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Boxy",
@@ -61,7 +68,8 @@
     "stratStat": 3,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Americaball",
@@ -69,7 +77,8 @@
     "stratStat": 4,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Big Rig",
@@ -77,7 +86,8 @@
     "stratStat": 5,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Boston Rob",
@@ -85,7 +95,8 @@
     "stratStat": 6,
     "socStat": 5,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Dog",
@@ -93,7 +104,8 @@
     "stratStat": 4,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Frederick",
@@ -101,7 +113,8 @@
     "stratStat": 4,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Jackson",
@@ -109,7 +122,8 @@
     "stratStat": 4,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Joey",
@@ -117,7 +131,8 @@
     "stratStat": 4,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Josephine Mercier",
@@ -125,7 +140,8 @@
     "stratStat": 3,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Lauren",
@@ -133,7 +149,8 @@
     "stratStat": 6,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Martin",
@@ -141,7 +158,8 @@
     "stratStat": 5,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Petra",
@@ -149,7 +167,8 @@
     "stratStat": 5,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Carl Grimes",
@@ -157,7 +176,8 @@
     "stratStat": 3,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Vriska Serket",
@@ -165,7 +185,8 @@
     "stratStat": 5,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Cashy",
@@ -173,7 +194,8 @@
     "stratStat": 2,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Horatio Caine",
@@ -181,7 +203,8 @@
     "stratStat": 4,
     "socStat": 5,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Isaac Creighton",
@@ -189,7 +212,8 @@
     "stratStat": 3,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Teresa Tayliss",
@@ -197,7 +221,8 @@
     "stratStat": 3,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Nagito Komaeda",
@@ -205,7 +230,8 @@
     "stratStat": 6,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Atom",
@@ -213,7 +239,8 @@
     "stratStat": 4,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Captain Hammer",
@@ -221,7 +248,8 @@
     "stratStat": 1,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Four",
@@ -229,7 +257,8 @@
     "stratStat": 4,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Germanyball",
@@ -237,7 +266,8 @@
     "stratStat": 2,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Heathcliff",
@@ -245,7 +275,8 @@
     "stratStat": 3,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Homestar Runner",
@@ -253,7 +284,8 @@
     "stratStat": 1,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Jack Dawson",
@@ -261,7 +293,8 @@
     "stratStat": 3,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "King Lorenzo",
@@ -269,7 +302,8 @@
     "stratStat": 5,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Tom",
@@ -277,7 +311,8 @@
     "stratStat": 5,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Mitochondria",
@@ -285,7 +320,8 @@
     "stratStat": 3,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Watch",
@@ -293,7 +329,8 @@
     "stratStat": 3,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Death Man",
@@ -301,7 +338,8 @@
     "stratStat": 3,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Dr Horrible",
@@ -309,7 +347,8 @@
     "stratStat": 4,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Todd",
@@ -317,7 +356,8 @@
     "stratStat": 3,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Nitro",
@@ -325,7 +365,8 @@
     "stratStat": 5,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Roco",
@@ -333,7 +374,8 @@
     "stratStat": 3,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Tommy Walter",
@@ -341,7 +383,8 @@
     "stratStat": 3,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Terezi Pyrope",
@@ -349,7 +392,8 @@
     "stratStat": 4,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "2-D",
@@ -357,7 +401,8 @@
     "stratStat": 2,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "ChrisPop",
@@ -365,7 +410,8 @@
     "stratStat": 3,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Koda",
@@ -373,7 +419,8 @@
     "stratStat": 6,
     "socStat": 3,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "OG",
@@ -381,7 +428,8 @@
     "stratStat": 5,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Hunter Moses",
@@ -389,7 +437,8 @@
     "stratStat": 1,
     "socStat": 6,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Ronny the Banana",
@@ -397,7 +446,8 @@
     "stratStat": 1,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Tom Brady",
@@ -405,7 +455,8 @@
     "stratStat": 4,
     "socStat": 5,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Satan",
@@ -413,7 +464,8 @@
     "stratStat": 4,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Transparent Red",
@@ -421,7 +473,8 @@
     "stratStat": 4,
     "socStat": 5,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Joe",
@@ -429,7 +482,8 @@
     "stratStat": 2,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Dangerous Dynamites"
   },
   {
     "name": "Hexbug",
@@ -437,7 +491,8 @@
     "stratStat": 1,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "The Miser",
@@ -445,7 +500,8 @@
     "stratStat": 4,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Trogdor the Burninator",
@@ -453,7 +509,8 @@
     "stratStat": 1,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "Billy Blockhead",
@@ -461,7 +518,8 @@
     "stratStat": 2,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Mr Wilson",
@@ -469,7 +527,8 @@
     "stratStat": 4,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Tomamasi"
   },
   {
     "name": "Pencil",
@@ -477,7 +536,8 @@
     "stratStat": 1,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Eclipsed Survivors"
   },
   {
     "name": "V2",
@@ -485,7 +545,8 @@
     "stratStat": 4,
     "socStat": 4,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Chad",
@@ -493,7 +554,8 @@
     "stratStat": 1,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Lukey",
@@ -501,7 +563,8 @@
     "stratStat": 1,
     "socStat": 2,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   },
   {
     "name": "Mr Ben",
@@ -509,6 +572,7 @@
     "stratStat": 1,
     "socStat": 1,
     "notoriety": 0,
-    "faction": "Unaffiliated"
+    "faction": "Unaffiliated",
+    "startingTeam": "Raging Rapids"
   }
 ]

@@ -31,10 +31,11 @@ startingTeams = 4 # Default: 4 // If you're adding more than 4, you're gonna hav
 mergeatory = True # Default: True
 
 # Auto-Runner
-simulationsToRun = 100
+simulationsToRun = 50
 AUTORUN = False
 
 FASTFORWARD = False
 
 PRESET_PROFILES = True
+PRESET_TEAMS = False
 PROFILE_FILE_PATH = 'profiles.json'
